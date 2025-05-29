@@ -1,10 +1,19 @@
 package delicious.food.map.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import delicious.food.map.entity.PoiDataEntity;
 import delicious.food.map.mapper.PoiDataMapper;
+import delicious.food.map.model.PaginationModel;
 import delicious.food.map.service.PoiDataService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 美食地点数据 服务实现类
@@ -15,4 +24,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class PoiDataServiceImpl extends ServiceImpl<PoiDataMapper, PoiDataEntity> implements PoiDataService {
 
+    @Resource
+    PoiDataMapper poiDataMapper;
+
+    /**
+     * 分页获取所有 Poi 数据
+     *
+     * @param paginationModel 分页信息
+     */
+    @Override
+    public List<PoiDataEntity> getAll(PaginationModel paginationModel) {
+        IPage<PoiDataEntity> page;
+        if (paginationModel.getPageNum() == null || paginationModel.getPageSize() == null) {
+            page = new Page<>(1, 100);
+        } else {
+            page = new Page<>(paginationModel.getPageNum(), paginationModel.getPageSize());
+        }
+        List<PoiDataEntity> poiDataEntityList = poiDataMapper.selectList(page, null);
+        return poiDataEntityList;
+    }
 }

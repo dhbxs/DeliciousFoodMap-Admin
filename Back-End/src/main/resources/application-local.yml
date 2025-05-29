@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/delicious-food-map?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: '123456'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # HTML模板配置
+  freemarker:
+    cache: false # 缓存配置 开发阶段应该配置为false 因为经常会改
+    suffix: .html # 模版后缀名 默认为ftl
+    charset: UTF-8
+    template-loader-path: classpath:/mail-template/
+
+#日志
+logging:
+  config: classpath:logback-console.xml

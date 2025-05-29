@@ -1,0 +1,1650 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全国美食地图</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://webapi.amap.com/loader.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+        
+        #app {
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* 全屏地图 */
+        #map-container {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* 右侧浮动面板 */
+        .floating-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 380px;
+            max-height: calc(100vh - 40px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            transform: translateX(0);
+        }
+        
+        .floating-panel.collapsed {
+            width: 60px;
+            height: 60px;
+            transform: translateX(0);
+        }
+        
+        .panel-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: rgba(71, 85, 105, 0.1);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            transform: scale(1);
+        }
+        
+        .panel-toggle:hover {
+            background: rgba(71, 85, 105, 0.2);
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .panel-toggle:active {
+            transform: scale(0.95) rotate(-5deg);
+        }
+        
+        .panel-toggle i {
+            transition: all 0.3s ease;
+        }
+        
+        .floating-panel.collapsed .panel-toggle i {
+            transform: rotate(180deg);
+        }
+        
+        .panel-content {
+            padding: 20px;
+            height: 100%;
+            overflow: hidden;
+            transition: opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .floating-panel.collapsed .panel-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* 分类筛选器 */
+        .category-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+        
+        .list-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s ease;
+        }
+        
+        .section-title:hover {
+            color: #1f2937;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        
+        .category-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .category-grid::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 2px;
+        }
+        
+        .category-grid::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 2px;
+            transition: background 0.2s ease;
+        }
+        
+        .category-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+        
+        .category-btn {
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 44px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0) scale(1);
+        }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .category-btn:hover::before {
+            left: 100%;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .category-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .category-btn.active {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .category-btn i {
+            margin-right: 4px;
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+        
+        .category-btn:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* 地点列表 */
+        .location-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+            min-height: 0;
+        }
+        
+        .location-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .location-list::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 2px;
+        }
+        
+        .location-list::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 2px;
+            transition: background 0.2s ease;
+        }
+        
+        .location-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+        
+        .location-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: translateX(0) scale(1);
+        }
+        
+        .location-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transition: left 0.4s ease;
+        }
+        
+        .location-item:hover::before {
+            left: 100%;
+        }
+        
+        .location-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(4px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .location-item:active {
+            transform: translateX(2px) scale(0.98);
+        }
+        
+        .location-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        
+        .location-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .location-item:hover .location-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .location-name {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        
+        .location-item:hover .location-name {
+            color: #1f2937;
+        }
+        
+        .location-address {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 4px;
+            transition: color 0.2s ease;
+        }
+        
+        .location-item:hover .location-address {
+            color: #475569;
+        }
+        
+        .location-time {
+            font-size: 11px;
+            color: #94a3b8;
+            transition: color 0.2s ease;
+        }
+        
+        .location-item:hover .location-time {
+            color: #64748b;
+        }
+        
+        /* 标记点样式 */
+        .marker-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1);
+        }
+        
+        .marker-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .marker-icon:active {
+            transform: scale(0.9) rotate(-5deg);
+        }
+        
+        /* 底部模态窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(0px);
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            max-height: 70vh;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2001;
+            overflow: hidden;
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px 20px 0 20px;
+            position: relative;
+        }
+        
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin: 0 auto 16px auto;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-handle:hover {
+            background: #cbd5e1;
+            transform: scaleX(1.2);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(71, 85, 105, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1);
+        }
+        
+        .modal-close:hover {
+            background: rgba(71, 85, 105, 0.2);
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        .modal-close:active {
+            transform: scale(0.9) rotate(180deg);
+        }
+        
+        .modal-body {
+            padding: 0 20px 20px 20px;
+            max-height: calc(70vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .poi-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            animation: slideInUp 0.5s ease-out;
+        }
+        
+        .poi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .poi-header:hover .poi-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .poi-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 4px;
+            transition: color 0.2s ease;
+        }
+        
+        .poi-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: white;
+            transition: all 0.2s ease;
+            transform: scale(1);
+        }
+        
+        .poi-category:hover {
+            transform: scale(1.05);
+        }
+        
+        .poi-details {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        .poi-detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            transform: translateX(0);
+        }
+        
+        .poi-detail-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .poi-detail-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .poi-detail-item:hover .poi-detail-icon {
+            color: #475569;
+            transform: scale(1.1);
+        }
+        
+        .poi-detail-text {
+            flex: 1;
+            color: #374151;
+            line-height: 1.5;
+            transition: color 0.2s ease;
+        }
+        
+        .poi-detail-item:hover .poi-detail-text {
+            color: #1f2937;
+        }
+        
+        .poi-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            animation: slideInUp 0.7s ease-out;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0) scale(1);
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .action-btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: #475569;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #334155;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(71, 85, 105, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .floating-panel {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-height: calc(100vh - 20px);
+            }
+            
+            .floating-panel.collapsed {
+                width: 50px;
+                height: 50px;
+                left: auto;
+                right: 10px;
+            }
+            
+            .panel-toggle {
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+            }
+            
+            .panel-content {
+                padding: 15px;
+            }
+            
+            .category-section {
+                flex: 0 0 45%;
+                margin-bottom: 12px;
+            }
+            
+            .list-section {
+                flex: 0 0 50%;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            
+            .category-btn {
+                padding: 8px 10px;
+                font-size: 11px;
+                min-height: 36px;
+            }
+            
+            .section-title {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            .modal-content {
+                max-height: 80vh;
+            }
+            
+            .modal-body {
+                max-height: calc(80vh - 80px);
+            }
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #64748b;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        .loading button {
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .loading button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+        }
+        
+        .loading button:active {
+            transform: scale(0.95);
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 动画关键帧 */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* 展开/收起动画 */
+        .expand-enter-active, .expand-leave-active {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .expand-enter-from, .expand-leave-to {
+            opacity: 0;
+            max-height: 0;
+            transform: translateY(-10px);
+        }
+        
+        .expand-enter-to, .expand-leave-from {
+            opacity: 1;
+            max-height: 400px;
+            transform: translateY(0);
+        }
+        
+        /* 列表项进入动画 */
+        .list-enter-active {
+            transition: all 0.3s ease;
+        }
+        
+        .list-enter-from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .list-enter-to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 全屏地图 -->
+        <div id="map-container"></div>
+        
+        <!-- 右侧浮动面板 -->
+        <div :class="['floating-panel', { collapsed: panelCollapsed }]">
+            <button class="panel-toggle" @click="togglePanel">
+                <i :class="panelCollapsed ? 'fas fa-bars' : 'fas fa-times'"></i>
+            </button>
+            
+            <div class="panel-content">
+                <!-- 分类筛选 -->
+                <div class="category-section">
+                    <div class="section-title">
+                        <i class="fas fa-filter"></i>
+                        筛选分类
+                    </div>
+                    <div class="category-grid">
+                        <button
+                            v-for="(category, index) in allCategories"
+                            :key="category.name"
+                            @click="filterByCategory(category.name)"
+                            :class="['category-btn', { active: selectedCategory === category.name }]"
+                            :style="{
+                                ...(selectedCategory === category.name ? {
+                                    backgroundColor: category.color,
+                                    borderColor: category.color,
+                                    color: 'white'
+                                } : {
+                                    borderColor: category.color,
+                                    color: category.color
+                                }),
+                                animationDelay: `${index * 0.05}s`
+                            }"
+                        >
+                            <i :class="category.icon"></i>
+                            {{ category.displayName || category.name }}
+                            <span style="margin-left: 4px; font-size: 10px; opacity: 0.8;">
+                                ({{ getCountByCategory(category.name) }})
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 地点列表 -->
+                <div class="list-section">
+                    <div class="section-title">
+                        <i class="fas fa-list"></i>
+                        地点列表
+                        <span style="font-size: 12px; color: #64748b; margin-left: auto;">
+                            {{ filteredPois.length }} 个地点
+                        </span>
+                    </div>
+                    
+                    <div v-if="loading" class="loading">
+                        <i class="fas fa-spinner"></i>
+                        加载中...
+                    </div>
+                    
+                    <div v-else class="location-list">
+                        <transition-group name="list" tag="div">
+                            <div
+                                v-for="(poi, index) in visiblePois"
+                                :key="poi.id"
+                                class="location-item"
+                                @click="focusOnMarker(poi)"
+                                :style="{ animationDelay: `${index * 0.05}s` }"
+                            >
+                                <div class="location-header">
+                                    <div 
+                                        class="location-icon"
+                                        :style="{ backgroundColor: getCategoryColor(poi.category) }"
+                                    >
+                                        <i :class="getCategoryIcon(poi.category)"></i>
+                                    </div>
+                                    <div class="location-name">{{ poi.name }}</div>
+                                </div>
+                                <div class="location-address">{{ poi.address }}</div>
+                                <div class="location-time">
+                                    <i class="fas fa-edit"></i>
+                                    {{ poi.editTime }}
+                                </div>
+                            </div>
+                        </transition-group>
+                        
+                        <!-- 加载更多按钮 -->
+                        <div v-if="hasMorePois" class="loading" style="padding: 10px;">
+                            <button 
+                                @click="loadMorePois"
+                                style="background: #475569; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;"
+                            >
+                                加载更多
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部模态窗 -->
+        <div :class="['modal-overlay', { show: showModal }]" @click="closeModal">
+            <div class="modal-content" @click.stop>
+                <div class="modal-header">
+                    <div class="modal-handle"></div>
+                    <button class="modal-close" @click="closeModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="modal-body" v-if="selectedPoi">
+                    <div class="poi-header">
+                        <div 
+                            class="poi-icon"
+                            :style="{ backgroundColor: getCategoryColor(selectedPoi.category) }"
+                        >
+                            <i :class="getCategoryIcon(selectedPoi.category)"></i>
+                        </div>
+                        <div class="poi-info">
+                            <h3>{{ selectedPoi.name }}</h3>
+                            <div 
+                                class="poi-category"
+                                :style="{ backgroundColor: getCategoryColor(selectedPoi.category) }"
+                            >
+                                <i :class="getCategoryIcon(selectedPoi.category)"></i>
+                                {{ getCategoryDisplayName(selectedPoi.category) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="poi-details">
+                        <div class="poi-detail-item">
+                            <div class="poi-detail-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="poi-detail-text">{{ selectedPoi.address }}</div>
+                        </div>
+                        
+                        <div class="poi-detail-item">
+                            <div class="poi-detail-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="poi-detail-text">{{ selectedPoi.description }}</div>
+                        </div>
+                        
+                        <div class="poi-detail-item">
+                            <div class="poi-detail-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="poi-detail-text">编辑时间: {{ selectedPoi.editTime }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="poi-actions">
+                        <a 
+                            :href="`https://uri.amap.com/marker?position=${selectedPoi.lnglat[0]},${selectedPoi.lnglat[1]}&name=${encodeURIComponent(selectedPoi.name)}`"
+                            class="action-btn btn-primary"
+                            target="_blank"
+                        >
+                            <i class="fas fa-route"></i>
+                            导航
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    map: null,
+                    markers: [],
+                    selectedCategory: '全部',
+                    selectedPoi: null,
+                    showModal: false,
+                    panelCollapsed: false,
+                    loading: false,
+                    
+                    // 懒加载相关
+                    visibleCount: 10,
+                    loadStep: 10,
+                    
+                    // 分类数据管理
+                    categories: [
+                        {
+                            name: '粤菜馆',
+                            color: '#dc2626',
+                            icon: 'fas fa-utensils'
+                        },
+                        {
+                            name: '早餐、小吃、肠粉、粥、面店',
+                            displayName: '早餐小吃',
+                            color: '#ea580c',
+                            icon: 'fas fa-bread-slice'
+                        },
+                        {
+                            name: '奶茶柠檬茶、糖水甜品店',
+                            displayName: '奶茶甜品',
+                            color: '#db2777',
+                            icon: 'fas fa-ice-cream'
+                        },
+                        {
+                            name: '景点',
+                            color: '#65a30d',
+                            icon: 'fas fa-camera'
+                        },
+                        {
+                            name: '夜宵店',
+                            color: '#7c3aed',
+                            icon: 'fas fa-moon'
+                        },
+                        {
+                            name: '早茶店',
+                            color: '#d97706',
+                            icon: 'fas fa-coffee'
+                        },
+                        {
+                            name: '啫啫煲、煲仔饭、黄鳝饭、炖品店',
+                            displayName: '煲仔炖品',
+                            color: '#4f46e5',
+                            icon: 'fas fa-fire'
+                        },
+                        {
+                            name: '江浙沪菜合集/苏式面',
+                            displayName: '苏式面',
+                            color: '#0891b2',
+                            icon: 'fas fa-bowl-food'
+                        },
+                        {
+                            name: '江浙沪菜合集/烘焙系列',
+                            displayName: '烘焙系列',
+                            color: '#b45309',
+                            icon: 'fas fa-cookie'
+                        },
+                        {
+                            name: '江浙沪菜合集/杭帮面',
+                            displayName: '杭帮面',
+                            color: '#0369a1',
+                            icon: 'fas fa-bowl-rice'
+                        },
+                        {
+                            name: '江浙沪菜合集/杭帮菜',
+                            displayName: '杭帮菜',
+                            color: '#15803d',
+                            icon: 'fas fa-leaf'
+                        },
+                        {
+                            name: '江浙沪菜合集/西餐及东南亚菜系',
+                            displayName: '西餐东南亚',
+                            color: '#9333ea',
+                            icon: 'fas fa-globe-asia'
+                        },
+                        {
+                            name: '江浙沪菜合集/苏州菜',
+                            displayName: '苏州菜',
+                            color: '#059669',
+                            icon: 'fas fa-fish'
+                        }
+                    ],
+                    
+                    // 美食地点数据
+                    poiData: [
+                        // 粤菜馆 (5条)
+                        {
+                            id: 1,
+                            name: "广州酒家",
+                            address: "广州市荔湾区文昌南路2号",
+                            description: "百年老字号粤菜酒家，招牌白切鸡和烧鹅闻名",
+                            category: "粤菜馆",
+                            lnglat: [113.243, 23.117],
+                            editTime: "2024-01-15 14:30:25"
+                        },
+                        {
+                            id: 2,
+                            name: "陶陶居",
+                            address: "广州市荔湾区第十甫路20号",
+                            description: "创立于1880年的老字号茶楼，传统粤菜精品",
+                            category: "粤菜馆",
+                            lnglat: [113.249, 23.119],
+                            editTime: "2024-01-12 09:15:42"
+                        },
+                        {
+                            id: 3,
+                            name: "炳胜",
+                            address: "广州市天河区体育西路103号",
+                            description: "现代粤菜代表，创新与传统完美结合",
+                            category: "粤菜馆",
+                            lnglat: [113.324, 23.137],
+                            editTime: "2024-01-18 16:45:18"
+                        },
+                        {
+                            id: 4,
+                            name: "利苑酒家",
+                            address: "广州市天河区天河路208号",
+                            description: "港式粤菜精品，烧鹅和点心一流",
+                            category: "粤菜馆",
+                            lnglat: [113.331, 23.135],
+                            editTime: "2024-01-10 11:22:33"
+                        },
+                        {
+                            id: 5,
+                            name: "白天鹅宾馆",
+                            address: "广州市荔湾区沙面南街1号",
+                            description: "五星级酒店粤菜厅，环境优雅菜品精致",
+                            category: "粤菜馆",
+                            lnglat: [113.236, 23.114],
+                            editTime: "2024-01-20 13:55:07"
+                        },
+
+                        // 早餐、小吃、肠粉、粥、面店 (5条)
+                        {
+                            id: 11,
+                            name: "银记肠粉店",
+                            address: "广州市荔湾区上下九步行街",
+                            description: "广州最有名的肠粉店之一，布拉肠粉嫩滑香甜",
+                            category: "早餐、小吃、肠粉、粥、面店",
+                            lnglat: [113.248, 23.118],
+                            editTime: "2024-01-15 07:20:14"
+                        },
+                        {
+                            id: 12,
+                            name: "伍湛记粥品",
+                            address: "广州市越秀区文明路160号",
+                            description: "百年粥品老店，及第粥和艇仔粥是招牌",
+                            category: "早餐、小吃、肠粉、粥、面店",
+                            lnglat: [113.276, 23.125],
+                            editTime: "2024-01-12 06:45:33"
+                        },
+                        {
+                            id: 13,
+                            name: "达扬原味汤粉王",
+                            address: "广州市天河区石牌西路",
+                            description: "地道的广州汤粉，猪肝粉和鱼片粉很受欢迎",
+                            category: "早餐、小吃、肠粉、粥、面店",
+                            lnglat: [113.348, 23.143],
+                            editTime: "2024-01-18 08:15:27"
+                        },
+                        {
+                            id: 14,
+                            name: "九爷鸡",
+                            address: "广州市海珠区江南西路",
+                            description: "白切鸡专门店，鸡肉嫩滑，蘸料一绝",
+                            category: "早餐、小吃、肠粉、粥、面店",
+                            lnglat: [113.265, 23.099],
+                            editTime: "2024-01-10 07:55:48"
+                        },
+                        {
+                            id: 15,
+                            name: "老西关肠粉",
+                            address: "广州市荔湾区恩宁路",
+                            description: "传统西关肠粉，手工制作口感顺滑",
+                            category: "早餐、小吃、肠粉、粥、面店",
+                            lnglat: [113.242, 23.120],
+                            editTime: "2024-01-20 06:30:19"
+                        },
+
+                        // 奶茶柠檬茶、糖水甜品店 (5条)
+                        {
+                            id: 21,
+                            name: "玫瑰甜品",
+                            address: "广州市越秀区北京路大马站",
+                            description: "老字号糖水店，双皮奶和红豆沙是招牌",
+                            category: "奶茶柠檬茶、糖水甜品店",
+                            lnglat: [113.281, 23.128],
+                            editTime: "2024-01-15 18:45:33"
+                        },
+                        {
+                            id: 22,
+                            name: "南信甜品",
+                            address: "广州市荔湾区第十甫路47号",
+                            description: "广州知名甜品连锁，双皮奶和姜撞奶一流",
+                            category: "奶茶柠檬茶、糖水甜品店",
+                            lnglat: [113.250, 23.118],
+                            editTime: "2024-01-12 19:22:17"
+                        },
+                        {
+                            id: 23,
+                            name: "满记甜品",
+                            address: "广州市天河区天河城",
+                            description: "港式甜品连锁，芒果班戟和杨枝甘露必点",
+                            category: "奶茶柠檬茶、糖水甜品店",
+                            lnglat: [113.325, 23.137],
+                            editTime: "2024-01-18 20:15:44"
+                        },
+                        {
+                            id: 16,
+                            name: "茶颜悦色",
+                            address: "广州市天河区正佳广场",
+                            description: "网红茶饮品牌，声声乌龙和幽兰拿铁必试",
+                            category: "奶茶柠檬茶、糖水甜品店",
+                            lnglat: [113.323, 23.138],
+                            editTime: "2024-01-15 15:25:42"
+                        },
+                        {
+                            id: 17,
+                            name: "喜茶",
+                            address: "广州市越秀区北京路",
+                            description: "新式茶饮领导品牌，芝芝莓莓和多肉葡萄很棒",
+                            category: "奶茶柠檬茶、糖水甜品店",
+                            lnglat: [113.279, 23.130],
+                            editTime: "2024-01-12 14:18:35"
+                        },
+
+                        // 景点 (5条)
+                        {
+                            id: 41,
+                            name: "广州塔",
+                            address: "广州市海珠区阅江西路222号",
+                            description: "广州地标建筑，小蛮腰夜景绝美",
+                            category: "景点",
+                            lnglat: [113.324, 23.109],
+                            editTime: "2024-01-15 10:30:15"
+                        },
+                        {
+                            id: 42,
+                            name: "陈家祠",
+                            address: "广州市荔湾区中山七路恩龙里34号",
+                            description: "岭南建筑艺术的瑰宝，广东民间工艺博物馆",
+                            category: "景点",
+                            lnglat: [113.243, 23.125],
+                            editTime: "2024-01-12 11:45:28"
+                        },
+                        {
+                            id: 43,
+                            name: "沙面岛",
+                            address: "广州市荔湾区沙面",
+                            description: "欧陆风情建筑群，适合漫步拍照",
+                            category: "景点",
+                            lnglat: [113.236, 23.115],
+                            editTime: "2024-01-18 14:22:42"
+                        },
+                        {
+                            id: 44,
+                            name: "珠江夜游",
+                            address: "广州市越秀区沿江西路",
+                            description: "珠江两岸夜景，感受广州的繁华",
+                            category: "景点",
+                            lnglat: [113.264, 23.117],
+                            editTime: "2024-01-10 19:15:33"
+                        },
+                        {
+                            id: 45,
+                            name: "白云山",
+                            address: "广州市白云区白云山",
+                            description: "广州市肺，登山健身观景的好去处",
+                            category: "景点",
+                            lnglat: [113.285, 23.195],
+                            editTime: "2024-01-20 08:55:07"
+                        },
+
+                        // 夜宵店 (5条)
+                        {
+                            id: 6,
+                            name: "宝华面店",
+                            address: "广州市荔湾区宝华路117号",
+                            description: "深夜营业的老字号面店，云吞面和牛腩面必点",
+                            category: "夜宵店",
+                            lnglat: [113.246, 23.115],
+                            editTime: "2024-01-15 22:30:15"
+                        },
+                        {
+                            id: 7,
+                            name: "胜记海鲜大排档",
+                            address: "广州市海珠区江南大道中180号",
+                            description: "24小时营业的海鲜大排档，白灼虾和蒜蓉扇贝很棒",
+                            category: "夜宵店",
+                            lnglat: [113.262, 23.096],
+                            editTime: "2024-01-12 23:45:28"
+                        },
+                        {
+                            id: 8,
+                            name: "阿婆牛杂",
+                            address: "广州市越秀区北京路步行街",
+                            description: "夜宵必选，热腾腾的牛杂萝卜",
+                            category: "夜宵店",
+                            lnglat: [113.280, 23.129],
+                            editTime: "2024-01-18 21:15:52"
+                        },
+                        {
+                            id: 9,
+                            name: "兴记大排档",
+                            address: "广州市天河区员村二横路",
+                            description: "深夜食堂，炒河粉和白切鸡很受欢迎",
+                            category: "夜宵店",
+                            lnglat: [113.365, 23.125],
+                            editTime: "2024-01-10 20:38:41"
+                        },
+                        {
+                            id: 10,
+                            name: "老西关夜粥",
+                            address: "广州市荔湾区多宝路",
+                            description: "传统夜粥店，艇仔粥和及第粥是招牌",
+                            category: "夜宵店",
+                            lnglat: [113.245, 23.122],
+                            editTime: "2024-01-20 19:52:36"
+                        },
+
+                        // 早茶店 (5条)
+                        {
+                            id: 26,
+                            name: "点都德",
+                            address: "广州市天河区体育西路",
+                            description: "现代港式茶餐厅，虾饺和烧卖制作精美",
+                            category: "早茶店",
+                            lnglat: [113.326, 23.136],
+                            editTime: "2024-01-15 09:30:15"
+                        },
+                        {
+                            id: 27,
+                            name: "稻香",
+                            address: "广州市越秀区环市东路",
+                            description: "港式茶楼连锁，点心品种丰富，性价比高",
+                            category: "早茶店",
+                            lnglat: [113.295, 23.140],
+                            editTime: "2024-01-12 08:45:28"
+                        },
+                        {
+                            id: 28,
+                            name: "莲香楼",
+                            address: "广州市荔湾区第十甫路67号",
+                            description: "百年老字号茶楼，传统粤式点心的代表",
+                            category: "早茶店",
+                            lnglat: [113.251, 23.117],
+                            editTime: "2024-01-18 10:15:42"
+                        },
+                        {
+                            id: 29,
+                            name: "茶居",
+                            address: "广州市天河区珠江新城",
+                            description: "高端茶楼，环境优雅点心精致",
+                            category: "早茶店",
+                            lnglat: [113.322, 23.120],
+                            editTime: "2024-01-10 07:22:33"
+                        },
+                        {
+                            id: 30,
+                            name: "翠园",
+                            address: "广州市越秀区中山五路",
+                            description: "港式茶楼，以传统点心和茶品著称",
+                            category: "早茶店",
+                            lnglat: [113.285, 23.125],
+                            editTime: "2024-01-20 09:55:07"
+                        },
+
+                        // 啫啫煲、煲仔饭、黄鳝饭、炖品店 (5条)
+                        {
+                            id: 31,
+                            name: "民信老铺",
+                            address: "广州市越秀区惠福东路",
+                            description: "双皮奶发源地，也有很棒的煲仔饭",
+                            category: "啫啫煲、煲仔饭、黄鳝饭、炖品店",
+                            lnglat: [113.275, 23.126],
+                            editTime: "2024-01-15 12:30:25"
+                        },
+                        {
+                            id: 32,
+                            name: "煲仔皇",
+                            address: "广州市海珠区江南大道南",
+                            description: "专业煲仔饭连锁，腊味煲仔饭和黄鳝煲仔饭很棒",
+                            category: "啫啫煲、煲仔饭、黄鳝饭、炖品店",
+                            lnglat: [113.260, 23.098],
+                            editTime: "2024-01-12 11:45:18"
+                        },
+                        {
+                            id: 33,
+                            name: "啫啫煲专门店",
+                            address: "广州市天河区员村",
+                            description: "正宗啫啫煲，生滚粥和啫啫鸡煲是招牌",
+                            category: "啫啫煲、煲仔饭、黄鳝饭、炖品店",
+                            lnglat: [113.365, 23.125],
+                            editTime: "2024-01-18 18:22:44"
+                        },
+                        {
+                            id: 36,
+                            name: "清心鸡",
+                            address: "广州市越秀区东山口",
+                            description: "广式炖品专门店，清汤鸡和花胶炖品很滋补",
+                            category: "啫啫煲、煲仔饭、黄鳝饭、炖品店",
+                            lnglat: [113.290, 23.132],
+                            editTime: "2024-01-15 14:25:33"
+                        },
+                        {
+                            id: 37,
+                            name: "汤皇",
+                            address: "广州市天河区珠江新城",
+                            description: "高端炖品连锁，燕窝和花胶炖品是特色",
+                            category: "啫啫煲、煲仔饭、黄鳝饭、炖品店",
+                            lnglat: [113.322, 23.120],
+                            editTime: "2024-01-12 15:42:17"
+                        },
+
+                        // 江浙沪菜合集 (各类别各1条示例)
+                        {
+                            id: 50,
+                            name: "阿三面馆",
+                            address: "上海市黄浦区南京东路",
+                            description: "正宗苏式面，阳春面和红汤面都很地道",
+                            category: "江浙沪菜合集/苏式面",
+                            lnglat: [121.480, 31.236],
+                            editTime: "2024-01-15 11:30:25"
+                        },
+                        {
+                            id: 51,
+                            name: "沈大成",
+                            address: "上海市黄浦区福州路",
+                            description: "百年老字号，传统上海糕点和面包",
+                            category: "江浙沪菜合集/烘焙系列",
+                            lnglat: [121.483, 31.232],
+                            editTime: "2024-01-16 09:20:15"
+                        },
+                        {
+                            id: 52,
+                            name: "知味观",
+                            address: "杭州市上城区河坊街",
+                            description: "杭州老字号，片儿川和葱油拌面很有名",
+                            category: "江浙沪菜合集/杭帮面",
+                            lnglat: [120.168, 30.242],
+                            editTime: "2024-01-17 12:15:42"
+                        },
+                        {
+                            id: 53,
+                            name: "楼外楼",
+                            address: "杭州市上城区孤山路",
+                            description: "西湖名店，西湖醋鱼和东坡肉是招牌",
+                            category: "江浙沪菜合集/杭帮菜",
+                            lnglat: [120.143, 30.257],
+                            editTime: "2024-01-18 13:45:18"
+                        },
+                        {
+                            id: 54,
+                            name: "新雅粤菜馆",
+                            address: "上海市黄浦区南京西路",
+                            description: "融合粤菜和西餐的老牌餐厅，环境优雅",
+                            category: "江浙沪菜合集/西餐及东南亚菜系",
+                            lnglat: [121.472, 31.232],
+                            editTime: "2024-01-19 18:30:25"
+                        },
+                        {
+                            id: 55,
+                            name: "松鹤楼",
+                            address: "苏州市姑苏区平江路",
+                            description: "苏州老字号，松鼠桂鱼和碧螺虾仁是招牌",
+                            category: "江浙沪菜合集/苏州菜",
+                            lnglat: [120.627, 31.312],
+                            editTime: "2024-01-20 12:25:33"
+                        }
+                    ]
+                }
+            },
+            
+            computed: {
+                allCategories() {
+                    return [
+                        { name: '全部', color: '#475569', icon: 'fas fa-globe' },
+                        ...this.categories
+                    ]
+                },
+                
+                filteredPois() {
+                    if (this.selectedCategory === '全部') {
+                        return this.poiData
+                    }
+                    return this.poiData.filter(poi => poi.category === this.selectedCategory)
+                },
+                
+                visiblePois() {
+                    return this.filteredPois.slice(0, this.visibleCount)
+                },
+                
+                hasMorePois() {
+                    return this.visibleCount < this.filteredPois.length
+                },
+                
+                filteredMarkers() {
+                    return this.markers.filter(marker => {
+                        if (this.selectedCategory === '全部') return true
+                        return marker.getExtData().category === this.selectedCategory
+                    })
+                }
+            },
+            
+            watch: {
+                selectedCategory() {
+                    this.visibleCount = this.loadStep
+                    this.updateMapMarkers()
+                }
+            },
+            
+            mounted() {
+                this.initMap()
+                
+                // 检测移动端，自动收起面板
+                if (window.innerWidth <= 768) {
+                    this.panelCollapsed = true
+                }
+            },
+            
+            methods: {
+                togglePanel() {
+                    this.panelCollapsed = !this.panelCollapsed
+                },
+                
+                loadMorePois() {
+                    this.visibleCount = Math.min(
+                        this.visibleCount + this.loadStep,
+                        this.filteredPois.length
+                    )
+                },
+                
+                async initMap() {
+                    try {
+                        this.loading = true
+                        
+                        const AMap = await new Promise((resolve, reject) => {
+                            window.AMapLoader.load({
+                                key: "d17c17f8f712c81a7e4241aff4faa7b0",
+                                plugins: ["AMap.Scale", "AMap.ToolBar", "AMap.Geolocation"]
+                            }).then(resolve).catch(reject)
+                        })
+                        
+                        this.map = new AMap.Map("map-container", {
+                            viewMode: "2D",
+                            zoom: 12,
+                            center: [113.264, 23.129], // 广州市中心
+                            mapStyle: 'amap://styles/normal' // 使用标准地图样式
+                        })
+                        
+                        // 添加控件
+                        this.map.addControl(new AMap.Scale())
+                        this.map.addControl(new AMap.ToolBar())
+                        
+                        // 添加定位控件
+                        const geolocation = new AMap.Geolocation({
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            position: 'LB',
+                            showCircle: false,
+                            panToLocation: true,
+                            zoomToAccuracy: true
+                        })
+                        this.map.addControl(geolocation)
+                        
+                        // 延迟创建标记，避免卡顿
+                        setTimeout(() => {
+                            this.createMarkers()
+                            this.updateMapMarkers()
+                            this.loading = false
+                        }, 100)
+                        
+                    } catch (error) {
+                        console.error('地图初始化失败:', error)
+                        this.loading = false
+                    }
+                },
+                
+                createMarkers() {
+                    // 分批创建标记，避免卡顿
+                    const batchSize = 10
+                    let index = 0
+                    
+                    const createBatch = () => {
+                        const batch = this.poiData.slice(index, index + batchSize)
+                        
+                        batch.forEach(poi => {
+                            const marker = new window.AMap.Marker({
+                                position: poi.lnglat,
+                                content: this.createMarkerContent(poi),
+                                offset: new window.AMap.Pixel(-16, -16),
+                                extData: poi
+                            })
+                            
+                            marker.on('click', () => {
+                                this.showPoiModal(poi)
+                            })
+                            
+                            this.markers.push(marker)
+                        })
+                        
+                        index += batchSize
+                        
+                        if (index < this.poiData.length) {
+                            setTimeout(createBatch, 10) // 延迟10ms创建下一批
+                        } else {
+                            this.updateMapMarkers()
+                        }
+                    }
+                    
+                    createBatch()
+                },
+                
+                createMarkerContent(poi) {
+                    const category = this.getCategoryObject(poi.category)
+                    return `
+                        <div class="marker-icon" style="background-color: ${category.color}">
+                            <i class="${category.icon}"></i>
+                        </div>
+                    `
+                },
+                
+                showPoiModal(poi) {
+                    this.selectedPoi = poi
+                    this.showModal = true
+                    
+                    // 移动端自动收起面板
+                    if (window.innerWidth <= 768) {
+                        this.panelCollapsed = true
+                    }
+                },
+                
+                closeModal() {
+                    this.showModal = false
+                    this.selectedPoi = null
+                },
+                
+                filterByCategory(categoryName) {
+                    this.selectedCategory = categoryName
+                },
+                
+                updateMapMarkers() {
+                    if (!this.map) return
+                    
+                    // 清除所有标记
+                    this.map.remove(this.markers)
+                    
+                    // 添加筛选后的标记
+                    const markersToShow = this.selectedCategory === '全部' 
+                        ? this.markers 
+                        : this.markers.filter(marker => marker.getExtData().category === this.selectedCategory)
+                    
+                    this.map.add(markersToShow)
+                    
+                    // 调整视野
+                    if (markersToShow.length > 0) {
+                        this.map.setFitView(markersToShow, false, [50, 50, 50, 50])
+                    }
+                },
+                
+                focusOnMarker(poi) {
+                    if (!this.map) return
+                    
+                    this.map.setCenter(poi.lnglat)
+                    this.map.setZoom(16)
+                    
+                    // 延迟显示模态窗
+                    setTimeout(() => {
+                        this.showPoiModal(poi)
+                    }, 300)
+                },
+                
+                getCategoryObject(categoryName) {
+                    const category = this.categories.find(cat => cat.name === categoryName)
+                    return category || { name: categoryName, color: '#475569', icon: 'fas fa-utensils' }
+                },
+                
+                getCategoryColor(categoryName) {
+                    const category = this.getCategoryObject(categoryName)
+                    return category.color
+                },
+                
+                getCategoryIcon(categoryName) {
+                    const category = this.getCategoryObject(categoryName)
+                    return category.icon
+                },
+                
+                getCategoryDisplayName(categoryName) {
+                    const category = this.getCategoryObject(categoryName)
+                    return category.displayName || category.name
+                },
+                
+                getCountByCategory(categoryName) {
+                    if (categoryName === '全部') return this.poiData.length
+                    return this.poiData.filter(poi => poi.category === categoryName).length
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

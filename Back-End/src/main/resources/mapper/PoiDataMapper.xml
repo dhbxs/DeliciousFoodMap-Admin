@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="delicious.food.map.mapper.PoiDataMapper">
-
+    <select id="search" resultType="delicious.food.map.model.PoiDataResultModel">
+        SELECT
+            pd.id,
+            pd.name,
+            pd.address,
+            pd.description,
+            pd.category AS category_id,
+            ca.name AS category_name,
+            ca.display_name AS category_display_name,
+            ca.color AS category_color,
+            ca.icon AS category_icon,
+            pd.longitude,
+            pd.latitude,
+            pd.creator,
+            pd.created_time,
+            pd.modified_time,
+            pd.photo
+        FROM
+            poi_data AS pd
+        LEFT JOIN
+            category AS ca
+            ON pd.category = ca.id
+        WHERE
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.keywords)">
+                (
+                    pd.id LIKE concat('%', #{searchModel.keywords}, '%')
+                    OR pd.name LIKE concat('%', #{searchModel.keywords}, '%')
+                    OR pd.address LIKE concat('%', #{searchModel.keywords}, '%')
+                )
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.categoryId)">
+                pd.category = #{searchModel.categoryId}
+            </if>
+    </select>
 </mapper>

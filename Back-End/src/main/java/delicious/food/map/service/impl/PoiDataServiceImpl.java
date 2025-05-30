@@ -1,12 +1,12 @@
 package delicious.food.map.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import delicious.food.map.entity.PoiDataEntity;
 import delicious.food.map.mapper.PoiDataMapper;
 import delicious.food.map.model.PaginationModel;
+import delicious.food.map.model.PoiDataResultModel;
+import delicious.food.map.model.PoiDataSearchModel;
 import delicious.food.map.service.PoiDataService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -38,9 +38,26 @@ public class PoiDataServiceImpl extends ServiceImpl<PoiDataMapper, PoiDataEntity
         if (paginationModel.getPageNum() == null || paginationModel.getPageSize() == null) {
             page = new Page<>(1, 100);
         } else {
-            page = new Page<>(paginationModel.getPageNum(), paginationModel.getPageSize());
+            page = new Page<>(Integer.parseInt(paginationModel.getPageNum()), Integer.parseInt(paginationModel.getPageSize()));
         }
         List<PoiDataEntity> poiDataEntityList = poiDataMapper.selectList(page, null);
         return poiDataEntityList;
+    }
+
+    /**
+     * 条件搜索所有美食数据
+     *
+     * @param searchModel
+     */
+    @Override
+    public IPage<PoiDataResultModel> search(PoiDataSearchModel searchModel) {
+        IPage<PoiDataResultModel> result;
+        if (StringUtils.isBlank(searchModel.getPageNum()) || StringUtils.isBlank(searchModel.getPageSize())) {
+            result = poiDataMapper.search(new Page<>(1, 100), searchModel);
+        } else {
+            result = poiDataMapper.search(new Page<>(Integer.parseInt(searchModel.getPageNum()), Integer.parseInt(searchModel.getPageSize())), searchModel);
+        }
+
+        return result;
     }
 }

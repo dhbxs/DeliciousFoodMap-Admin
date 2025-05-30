@@ -1,10 +1,10 @@
 package delicious.food.map.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,10 +13,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 美食地点数据 Entity
+ * 美食地点数据
  *
  * @author dhbxs
- * @since 2025-05-29 01:42:03
+ * @since 2025-05-30 11:01:41
  */
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class PoiDataEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private String id;
 
     /**
@@ -56,27 +56,38 @@ public class PoiDataEntity implements Serializable {
      * 经度
      */
     @TableField("longitude")
-    private Long longitude;
+    private String longitude;
 
     /**
      * 纬度
      */
     @TableField("latitude")
-    private Long latitude;
+    private String latitude;
+
+    /**
+     * 创建人
+     */
+    @TableField("creator")
+    private String creator;
 
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "created_time", fill = FieldFill.INSERT)
     private Date createdTime;
 
     /**
      * 修改时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "modified_time", fill = FieldFill.INSERT_UPDATE)
     private Date modifiedTime;
 
+    /**
+     * 店铺图片URL
+     */
+    @TableField("photo")
+    private String photo;
 
 }

@@ -16,8 +16,8 @@ public class PaginationModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer pageNum;
+    private String pageNum;
 
-    private Integer pageSize;
+    private String pageSize;
 }
 

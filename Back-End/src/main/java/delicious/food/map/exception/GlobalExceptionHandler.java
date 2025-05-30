@@ -3,6 +3,7 @@ package delicious.food.map.exception;
 import delicious.food.map.common.JsonResult;
 import delicious.food.map.common.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler {
         List<String> errors = new ArrayList<>();
         e.getBindingResult().getFieldErrors().forEach(error -> errors.add(error.getDefaultMessage()));
         return JsonResult.error(StatusCode.PARAMS_ERROR, String.join("，", errors));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public <T> JsonResult<T> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException: {}", e.getMessage(), e);
+        return JsonResult.error(StatusCode.PARAMS_ERROR, "请求参数错误");
     }
 
     @ExceptionHandler(RuntimeException.class)

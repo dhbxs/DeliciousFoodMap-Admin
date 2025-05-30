@@ -72,6 +72,10 @@ mvn spring-boot:run
 5. 后端接口文档： 通过 Apifox 共享
  [https://hdfjk079cx.apifox.cn](https://hdfjk079cx.apifox.cn)
 
+
+### 前端参考页面
+- 由 Fluid 社群 民事纠纷处理师兼职情感咨询师 大佬提供 [https://map.javai.cn/](https://map.javai.cn/)
+
 ## 🤝 贡献指南
 欢迎通过以下方式参与项目：
 1. Fork项目仓库

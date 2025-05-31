@@ -9,7 +9,8 @@ spring:
     cache: false # 缓存配置 开发阶段应该配置为false 因为经常会改
     suffix: .html # 模版后缀名 默认为ftl
     charset: UTF-8
-    template-loader-path: classpath:/mail-template/
+    check-template-location: false
+#    template-loader-path: classpath:/mail-template/
 
 #日志
 logging:

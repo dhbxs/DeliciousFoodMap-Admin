@@ -1,10 +1,13 @@
-# 美食地图 - Gourmet Guide
+# 美食地图 后端 - DeliciousFoodMap-Admin
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/yourusername/gourmet-guide/blob/main/LICENSE)
 [![SpringBoot](https://img.shields.io/badge/SpringBoot-3.4.1%2B-brightgreen)](https://spring.io/projects/spring-boot)
 [![Vue3](https://img.shields.io/badge/Vue-3.x-brightgreen)](https://vuejs.org/)
 
-基于JDK21 + SpringBoot + MybatisPlus + Vue实现的美食地理信息系统，帮助用户发现身边的美食店铺并提供导航服务。
+基于JDK21 + SpringBoot + MybatisPlus实现的美食地理信息系统，帮助用户发现身边的美食店铺并提供导航服务。
+
+- 美食地图 后端仓库地址 [https://github.com/dhbxs/DeliciousFoodMap-Admin](https://github.com/dhbxs/DeliciousFoodMap-Admin)
+- 美食地图 前端仓库地址 [https://github.com/dhbxs/DeliciousFoodMap-Web](https://github.com/dhbxs/DeliciousFoodMap-Web)
 
 ## 📌 功能特性
 
@@ -88,9 +91,8 @@ mvn spring-boot:run
 本项目采用 [MIT License](LICENSE)
 
 ## 🙏 致谢
-- 高德地图开放平台
+- Fluid 社群
 - Spring Boot开源社区
-- Vue.js开发团队
 
 ---
 

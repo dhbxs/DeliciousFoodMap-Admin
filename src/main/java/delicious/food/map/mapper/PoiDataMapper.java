@@ -8,8 +8,6 @@ import delicious.food.map.model.PoiDataSearchModel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
 /**
  * 美食地点数据 Mapper 接口
  *

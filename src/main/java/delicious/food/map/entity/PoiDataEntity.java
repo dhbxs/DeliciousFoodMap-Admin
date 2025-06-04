@@ -9,8 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 美食地点数据
@@ -18,8 +17,7 @@ import lombok.Setter;
  * @author dhbxs
  * @since 2025-05-30 11:01:41
  */
-@Getter
-@Setter
+@Data
 @TableName("poi_data")
 public class PoiDataEntity implements Serializable {
 

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.Data;
 
 /**
  * 系统用户 Entity
@@ -13,8 +13,7 @@ import lombok.Setter;
  * @author dhbxs
  * @since 2025-05-29 01:42:03
  */
-@Getter
-@Setter
+@Data
 @TableName("sys_user")
 public class SysUserEntity implements Serializable {
 

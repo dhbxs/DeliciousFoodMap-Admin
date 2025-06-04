@@ -7,8 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 /**
  * 分类 Entity
@@ -16,8 +15,7 @@ import lombok.Setter;
  * @author dhbxs
  * @since 2025-05-29 01:42:03
  */
-@Getter
-@Setter
+@Data
 @TableName("category")
 public class CategoryEntity implements Serializable {
 

@@ -23,16 +23,21 @@
         LEFT JOIN
             category AS ca
             ON pd.category = ca.id
-        WHERE
+        <where>
             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.keywords)">
-                (
-                    pd.id LIKE concat('%', #{searchModel.keywords}, '%')
-                    OR pd.name LIKE concat('%', #{searchModel.keywords}, '%')
-                    OR pd.address LIKE concat('%', #{searchModel.keywords}, '%')
+                AND (
+                        pd.id LIKE concat('%', #{searchModel.keywords}, '%')
+                        OR pd.name LIKE concat('%', #{searchModel.keywords}, '%')
+                        OR pd.address LIKE concat('%', #{searchModel.keywords}, '%')
                 )
             </if>
             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.categoryId)">
-                pd.category = #{searchModel.categoryId}
+                AND pd.category in
+                <foreach collection="searchModel.categoryId.split(',')" item="categoryId" open="("
+                         separator="," close=")">
+                    #{ categoryId }
+                </foreach>
             </if>
+        </where>
     </select>
 </mapper>

@@ -19,7 +19,7 @@ public class MyBatisPlusAutoGen {
                 //2、全局配置
                 .globalConfig(builder -> {
                     builder.author("dhbxs") // 设置作者名
-                            .outputDir(System.getProperty("user.dir") + "/Back-End/src/main/java")   //设置输出路径：项目的 java 目录下
+                            .outputDir(System.getProperty("user.dir") + "/src/main/java")   //设置输出路径：项目的 java 目录下
                             .commentDate("yyyy-MM-dd hh:mm:ss")   //注释日期
                             .dateType(DateType.ONLY_DATE)   //定义生成的实体类中日期的类型 TIME_PACK=LocalDateTime;ONLY_DATE=Date;
                             .fileOverride()  //覆盖之前的文件
@@ -37,7 +37,7 @@ public class MyBatisPlusAutoGen {
                             .xml("mapper")  //Mapper XML 包名
                             .controller("controller") //Controller 包名
                             .other("utils") //自定义文件包名
-                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, System.getProperty("user.dir") + "/Back-End/src/main/resources/auto-gen/mapper"));    //配置 mapper.xml 路径信息：项目的 resources 目录下
+                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, System.getProperty("user.dir") + "/src/main/resources/auto-gen/mapper"));    //配置 mapper.xml 路径信息：项目的 resources 目录下
                 })
                 //4、策略配置
                 .strategyConfig(builder -> {

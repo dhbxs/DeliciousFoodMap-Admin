@@ -5,7 +5,6 @@ import delicious.food.map.common.JsonResult;
 import delicious.food.map.entity.CategoryEntity;
 import delicious.food.map.service.CategoryService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 

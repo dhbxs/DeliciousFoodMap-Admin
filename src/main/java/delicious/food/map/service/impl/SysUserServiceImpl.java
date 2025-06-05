@@ -22,12 +22,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     /**
      * 通过ID 查找用户
      *
-     * @param userId
+     * @param userId 用户ID
      * @return SysEntity
      */
     @Override
     public SysUserEntity getUserById(String userId) {
-        SysUserEntity result = sysUserMapper.selectById(userId);
-        return result;
+        return sysUserMapper.selectById(userId);
     }
 }

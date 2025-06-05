@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.35, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
 -- Host: localhost    Database: delicious-food-map
 -- ------------------------------------------------------
--- Server version	8.0.35
+-- Server version	8.4.5
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -28,6 +28,7 @@ CREATE TABLE `category` (
   `display_name` varchar(200) DEFAULT NULL COMMENT '显示名称',
   `color` varchar(7) DEFAULT NULL COMMENT '分类颜色色号 Hex',
   `icon` varchar(100) DEFAULT NULL COMMENT '分类图标类名',
+  `is_delete` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='分类';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +39,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES ('1928292724911722497','粤菜馆','粤菜馆','#dc2626','#food-icon-a-010-food'),('1928292724911722498','早餐、小吃、肠粉、粥、面店','早餐小吃','#ea580c','#food-icon-a-016-breakfast'),('1928292724911722499','奶茶柠檬茶、糖水甜品店','奶茶甜品','#db2777','#food-icon-a-001-sweet'),('1928292724911722500','景点','景点','#65a30d','#food-icon-a-029-drink'),('1928292724911722501','夜宵店','夜宵店','#7c3aed','#food-icon-a-002-food'),('1928292724911722502','早茶店','早茶店','#d97706','#food-icon-a-011-drink'),('1928292724911722503','啫啫煲、煲仔饭、黄鳝饭、炖品店','煲仔炖品','#4f46e5','#food-icon-a-014-food'),('1928292724932694018','江浙沪菜合集/苏式面','苏式面','#0891b2','#food-icon-a-015-food'),('1928292724932694019','江浙沪菜合集/烘焙系列','烘焙系列','#b45309','#food-icon-a-010-food'),('1928292724932694020','江浙沪菜合集/杭帮面','杭帮面','#0369a1','#food-icon-a-015-food'),('1928292724932694021','江浙沪菜合集/杭帮菜','杭帮菜','#15803d','#food-icon-a-005-softdrinkcan'),('1928292724932694022','江浙沪菜合集/西餐及东南亚菜系','西餐东南亚','#9333ea','#food-icon-a-005-softdrinkcan'),('1928292724932694023','江浙沪菜合集/苏州菜','苏州菜','#059669','#food-icon-a-005-softdrinkcan');
+INSERT INTO `category` VALUES ('1928292724911722497','粤菜馆','粤菜馆','#dc2626','#food-icon-a-010-food','N'),('1928292724911722498','早餐、小吃、肠粉、粥、面店','早餐小吃','#ea580c','#food-icon-a-016-breakfast','N'),('1928292724911722499','奶茶柠檬茶、糖水甜品店','奶茶甜品','#db2777','#food-icon-a-001-sweet','N'),('1928292724911722500','景点','景点','#65a30d','#food-icon-a-029-drink','N'),('1928292724911722501','夜宵店','夜宵店','#7c3aed','#food-icon-a-002-food','N'),('1928292724911722502','早茶店','早茶店','#d97706','#food-icon-a-011-drink','N'),('1928292724911722503','啫啫煲、煲仔饭、黄鳝饭、炖品店','煲仔炖品','#4f46e5','#food-icon-a-014-food','N'),('1928292724932694018','江浙沪菜合集/苏式面','苏式面','#0891b2','#food-icon-a-015-food','N'),('1928292724932694019','江浙沪菜合集/烘焙系列','烘焙系列','#b45309','#food-icon-a-010-food','N'),('1928292724932694020','江浙沪菜合集/杭帮面','杭帮面','#0369a1','#food-icon-a-015-food','N'),('1928292724932694021','江浙沪菜合集/杭帮菜','杭帮菜','#15803d','#food-icon-a-005-softdrinkcan','N'),('1928292724932694022','江浙沪菜合集/西餐及东南亚菜系','西餐东南亚','#9333ea','#food-icon-a-005-softdrinkcan','N'),('1928292724932694023','江浙沪菜合集/苏州菜','苏州菜','#059669','#food-icon-a-005-softdrinkcan','N'),('1930626715989147650','吾欣怡','潘敬阳','ivory','https://avatars.githubusercontent.com/u/9600947','Y');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,4 +118,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-05 10:26:16
+-- Dump completed on 2025-06-05 22:05:38

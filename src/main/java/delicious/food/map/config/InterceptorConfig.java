@@ -31,7 +31,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
         HandlerInterceptor jwtInterceptor = new JwtInterceptor();
 
         List<String> patterns = new ArrayList<>();
-//        patterns.add("/user/login");
         patterns.add("/health/**");
         patterns.add("/poi-data/**");
         patterns.add("/category/**");

@@ -47,8 +47,8 @@ public class PoiDataEntity implements Serializable {
     /**
      * 分类
      */
-    @TableField("category")
-    private String category;
+    @TableField("category_id")
+    private String categoryId;
 
     /**
      * 经度
@@ -87,5 +87,13 @@ public class PoiDataEntity implements Serializable {
      */
     @TableField("photo")
     private String photo;
+
+    /**
+     * 是否删除
+     * Y - 已删除
+     * N - 未删除
+     */
+    @TableField("is_delete")
+    private String isDelete;
 
 }

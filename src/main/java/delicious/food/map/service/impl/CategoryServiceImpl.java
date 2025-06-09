@@ -47,7 +47,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
     @Override
     public boolean insertOrUpdateOrDeleteCategory(CategoryEntity categoryEntity) {
         if (StringUtils.equals(categoryEntity.getIsDelete(), "Y") && StringUtils.isBlank(categoryEntity.getId())) {
-            throw new BusinessException(StatusCode.PARAMS_ERROR, "删除是必须指定分类ID");
+            throw new BusinessException(StatusCode.PARAMS_ERROR, "删除时必须指定分类ID");
         }
         // 如果没有指定删除状态，默认为 N - 未删除
         if (StringUtils.isBlank(categoryEntity.getIsDelete())) {

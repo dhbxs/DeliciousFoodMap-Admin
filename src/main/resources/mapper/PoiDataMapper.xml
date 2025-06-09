@@ -7,7 +7,7 @@
             pd.name,
             pd.address,
             pd.description,
-            pd.category AS category_id,
+            pd.category_id,
             ca.name AS category_name,
             ca.display_name AS category_display_name,
             ca.color AS category_color,
@@ -22,8 +22,9 @@
             poi_data AS pd
         LEFT JOIN
             category AS ca
-            ON pd.category = ca.id
+            ON pd.category_id = ca.id
         <where>
+            pd.is_delete = 'N'
             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.keywords)">
                 AND (
                         pd.id LIKE concat('%', #{searchModel.keywords}, '%')
@@ -32,7 +33,7 @@
                 )
             </if>
             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.categoryId)">
-                AND pd.category in
+                AND pd.category_id in
                 <foreach collection="searchModel.categoryId.split(',')" item="categoryId" open="("
                          separator="," close=")">
                     #{ categoryId }

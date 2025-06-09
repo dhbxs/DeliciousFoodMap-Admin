@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     /**
-     * 新增或更新分类数据
+     * 美食分类数据 增删改接口
      * 有ID则更新 无则ID或ID不存在则新增
      * isDelete 值为Y则删除 值为空或值为N则不删除
      *

@@ -3,11 +3,13 @@ package delicious.food.map.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import delicious.food.map.common.JsonResult;
+import delicious.food.map.common.validator.group.SearchPoiData;
 import delicious.food.map.entity.PoiDataEntity;
 import delicious.food.map.model.PoiDataResultModel;
 import delicious.food.map.model.PoiDataSearchModel;
 import delicious.food.map.service.PoiDataService;
 import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -30,7 +32,7 @@ public class PoiDataController {
      * @return 搜索结果
      */
     @PostMapping("/search")
-    JsonResult<IPage<PoiDataResultModel>> search(@RequestBody PoiDataSearchModel searchModel) {
+    JsonResult<IPage<PoiDataResultModel>> search(@RequestBody @Validated(SearchPoiData.class) PoiDataSearchModel searchModel) {
         IPage<PoiDataResultModel> search = poiDataService.search(searchModel);
         return JsonResult.success(search);
     }

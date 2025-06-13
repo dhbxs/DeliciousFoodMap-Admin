@@ -25,6 +25,9 @@
             ON pd.category_id = ca.id
         <where>
             pd.is_delete = 'N'
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.id)">
+                AND pd.id = #{searchModel.id}
+            </if>
             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchModel.keywords)">
                 AND (
                         pd.id LIKE concat('%', #{searchModel.keywords}, '%')

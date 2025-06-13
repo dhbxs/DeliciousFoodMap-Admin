@@ -63,7 +63,8 @@ CREATE TABLE `poi_data` (
   `modified_time` datetime DEFAULT NULL COMMENT '修改时间',
   `photo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `is_delete` varchar(1) DEFAULT NULL COMMENT '是否删除\r\nY - 已删除 \r\nN - 未删除',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `poi_data_category_id_index` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='美食地点数据';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -119,4 +120,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-09 22:38:18
+-- Dump completed on 2025-06-13 23:40:47

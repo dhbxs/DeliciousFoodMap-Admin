@@ -2,6 +2,7 @@ package delicious.food.map.service;
 
 import delicious.food.map.entity.CategoryEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import delicious.food.map.model.CategoryResultModel;
 
 import java.util.List;
 
@@ -14,11 +15,11 @@ import java.util.List;
 public interface CategoryService extends IService<CategoryEntity> {
 
     /**
-     * 获取所有美食分类数据
+     * 获取所有美食分类数据 - 包含该分类下的美食数据量
      *
      * @return 分类数据
      */
-    List<CategoryEntity> getAll();
+    List<CategoryResultModel> getAll();
 
     /**
      * 新增或更新分类数据

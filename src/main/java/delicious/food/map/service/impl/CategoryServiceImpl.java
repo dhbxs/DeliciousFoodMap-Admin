@@ -5,6 +5,7 @@ import delicious.food.map.common.StatusCode;
 import delicious.food.map.entity.CategoryEntity;
 import delicious.food.map.exception.BusinessException;
 import delicious.food.map.mapper.CategoryMapper;
+import delicious.food.map.model.CategoryResultModel;
 import delicious.food.map.service.CategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -26,14 +27,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
     private CategoryMapper categoryMapper;
 
     /**
-     * 获取所有美食分类数据
+     * 获取所有美食分类数据 - 包含该分类下的美食数据量
      *
      * @return 分类数据
      */
     @Override
-    public List<CategoryEntity> getAll() {
-        LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<CategoryEntity>().eq(CategoryEntity::getIsDelete, "N");
-        return categoryMapper.selectList(wrapper);
+    public List<CategoryResultModel> getAll() {
+
+        return categoryMapper.getAllCategoryData();
     }
 
     /**

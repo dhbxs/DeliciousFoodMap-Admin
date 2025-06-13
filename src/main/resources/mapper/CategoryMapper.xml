@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="delicious.food.map.mapper.CategoryMapper">
-
+    <select id="getAllCategoryData" resultType="delicious.food.map.model.CategoryResultModel">
+        SELECT
+            ca.id,
+            ca.name,
+            ca.display_name,
+            ca.color,
+            ca.icon,
+            ca.is_delete,
+            temp.num
+        FROM category AS ca
+        LEFT JOIN
+             (
+                 SELECT
+                     pd.category_id,
+                     count(category_id) AS num
+                 FROM poi_data AS pd
+                 GROUP BY
+                     pd.category_id
+             ) AS temp
+             ON ca.id = temp.category_id
+        WHERE
+            ca.is_delete = 'N'
+    </select>
 </mapper>

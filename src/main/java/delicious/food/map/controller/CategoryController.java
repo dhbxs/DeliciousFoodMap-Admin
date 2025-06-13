@@ -3,6 +3,7 @@ package delicious.food.map.controller;
 
 import delicious.food.map.common.JsonResult;
 import delicious.food.map.entity.CategoryEntity;
+import delicious.food.map.model.CategoryResultModel;
 import delicious.food.map.service.CategoryService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,8 +33,8 @@ public class CategoryController {
      * @return 分类数据
      */
     @PostMapping("/get-all")
-    public JsonResult<List<CategoryEntity>> getAllCategoryData() {
-        List<CategoryEntity> result = categoryService.getAll();
+    public JsonResult<List<CategoryResultModel>> getAllCategoryData() {
+        List<CategoryResultModel> result = categoryService.getAll();
         return JsonResult.success(result);
     }
 

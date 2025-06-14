@@ -39,7 +39,7 @@ CREATE TABLE `category` (
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES ('1928292724911722497','粤菜馆','粤菜馆','#dc2626','#food-icon-a-010-food','N'),('1928292724911722498','早餐、小吃、肠粉、粥、面店','早餐小吃','#ea580c','#food-icon-a-016-breakfast','N'),('1928292724911722499','奶茶柠檬茶、糖水甜品店','奶茶甜品','#db2777','#food-icon-a-001-sweet','N'),('1928292724911722500','景点','景点','#65a30d','#food-icon-a-029-drink','N'),('1928292724911722501','夜宵店','夜宵店','#7c3aed','#food-icon-a-002-food','N'),('1928292724911722502','早茶店','早茶店','#d97706','#food-icon-a-011-drink','N'),('1928292724911722503','啫啫煲、煲仔饭、黄鳝饭、炖品店','煲仔炖品','#4f46e5','#food-icon-a-014-food','N'),('1928292724932694018','江浙沪菜合集/苏式面','苏式面','#0891b2','#food-icon-a-015-food','N'),('1928292724932694019','江浙沪菜合集/烘焙系列','烘焙系列','#b45309','#food-icon-a-010-food','N'),('1928292724932694020','江浙沪菜合集/杭帮面','杭帮面','#0369a1','#food-icon-a-015-food','N'),('1928292724932694021','江浙沪菜合集/杭帮菜','杭帮菜','#15803d','#food-icon-a-005-softdrinkcan','N'),('1928292724932694022','江浙沪菜合集/西餐及东南亚菜系','西餐东南亚','#9333ea','#food-icon-a-005-softdrinkcan','N'),('1928292724932694023','江浙沪菜合集/苏州菜','苏州菜','#059669','#food-icon-a-005-softdrinkcan','N'),('1930626715989147650','吾欣怡','潘敬阳','ivory','https://avatars.githubusercontent.com/u/9600947','Y');
+INSERT INTO `category` VALUES ('1928292724911722497','粤菜馆','粤菜馆','#dc2626','#food-icon-a-010-food','N'),('1928292724911722498','早餐、小吃、肠粉、粥、面店','早餐小吃','#ea580c','#food-icon-a-016-breakfast','N'),('1928292724911722499','奶茶柠檬茶、糖水甜品店','奶茶甜品','#db2777','#food-icon-a-001-sweet','N'),('1928292724911722500','景点','景点','#65a30d','#food-icon-a-029-drink','N'),('1928292724911722501','夜宵店','夜宵店','#7c3aed','#food-icon-a-002-food','N'),('1928292724911722502','早茶店','早茶店','#d97706','#food-icon-a-011-drink','N'),('1928292724911722503','啫啫煲、煲仔饭、黄鳝饭、炖品店','煲仔炖品','#4f46e5','#food-icon-a-014-food','N'),('1928292724932694018','江浙沪菜合集/苏式面','苏式面','#0891b2','#food-icon-a-015-food','N'),('1928292724932694019','江浙沪菜合集/烘焙系列','烘焙系列','#b45309','#food-icon-a-010-food','N'),('1928292724932694020','江浙沪菜合集/杭帮面','杭帮面','#0369a1','#food-icon-a-015-food','N'),('1928292724932694021','江浙沪菜合集/杭帮菜','杭帮菜','#15803d','#food-icon-a-005-softdrinkcan','N'),('1928292724932694022','江浙沪菜合集/西餐及东南亚菜系','西餐东南亚','#9333ea','#food-icon-a-005-softdrinkcan','N'),('1928292724932694023','江浙沪菜合集/苏州菜','苏州菜','#059669','#food-icon-a-005-softdrinkcan','N');
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,6 +79,30 @@ INSERT INTO `poi_data` VALUES ('1928299642766020609','9号花园私房菜','广�
 UNLOCK TABLES;
 
 --
+-- Table structure for table `sys_role`
+--
+
+DROP TABLE IF EXISTS `sys_role`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sys_role` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '角色id',
+  `role_name` varchar(100) DEFAULT NULL COMMENT '角色名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sys_role`
+--
+
+LOCK TABLES `sys_role` WRITE;
+/*!40000 ALTER TABLE `sys_role` DISABLE KEYS */;
+INSERT INTO `sys_role` VALUES (1,'管理员'),(2,'普通用户');
+/*!40000 ALTER TABLE `sys_role` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `sys_user`
 --
 
@@ -89,12 +113,15 @@ CREATE TABLE `sys_user` (
   `id` varchar(19) NOT NULL COMMENT 'ID',
   `nick_name` varchar(100) DEFAULT NULL COMMENT '昵称',
   `email` varchar(150) DEFAULT NULL COMMENT '邮箱',
+  `role_id` bigint unsigned DEFAULT NULL COMMENT '角色id',
   `password` varchar(32) DEFAULT NULL COMMENT '密码',
   `salt` varchar(32) DEFAULT NULL COMMENT '密码盐值',
   `sign` varchar(32) DEFAULT NULL COMMENT 'JWT Token 签名',
   `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `modified_time` datetime DEFAULT NULL COMMENT '修改时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `sys_user_email_unique` (`email`),
+  UNIQUE KEY `sys_user_nick_name_unique` (`nick_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -104,6 +131,7 @@ CREATE TABLE `sys_user` (
 
 LOCK TABLES `sys_user` WRITE;
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
+INSERT INTO `sys_user` VALUES ('1933906384221986818','admin','123@qq.com',1,'7D659BD1F372710B8FFCAE9C2D333500','LdQOwFNZubHL0D5dXyFpAzhd5RqRahY6','UjJyT7garfwdFuSWld0gikO6hv087EvV','2025-06-14 23:16:27','2025-06-14 23:16:27');
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -120,4 +148,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-13 23:40:47
+-- Dump completed on 2025-06-15  0:12:37

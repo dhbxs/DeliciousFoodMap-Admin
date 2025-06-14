@@ -32,8 +32,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         List<String> patterns = new ArrayList<>();
         patterns.add("/health/**");
-        patterns.add("/poi-data/**");
-        patterns.add("/category/**");
+        patterns.add("/sys-user/**");
+        patterns.add("/poi-data/search");
+        patterns.add("/category/get-all");
 
 
         registry.addInterceptor(jwtInterceptor)

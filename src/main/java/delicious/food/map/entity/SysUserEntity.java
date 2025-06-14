@@ -38,6 +38,12 @@ public class SysUserEntity implements Serializable {
     private String email;
 
     /**
+     * 角色ID
+     */
+    @TableField("role_id")
+    private Long roleId;
+
+    /**
      * 密码
      */
     @TableField("password")

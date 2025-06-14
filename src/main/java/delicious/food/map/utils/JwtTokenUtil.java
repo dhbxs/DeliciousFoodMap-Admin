@@ -35,9 +35,9 @@ public class JwtTokenUtil {
         Map<String, String> result = new HashMap<>();
 
         // 用随机UUID做为JWT Token签名的密钥
-        String sign = UUID.randomUUID().toString().toUpperCase();
+        String sign = CryptPasswordUtil.getSecureRandomString();
         String token = JWT.create().withAudience(userId, userName, roleId) // 将userid保存到token里面，作为载荷
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1 * 60 * 60 * 1000)) // 1小时后token过期
+                .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000)) // 2小时后token过期
                 .sign(Algorithm.HMAC256(sign));
 
         result.put("jwtToken", token);

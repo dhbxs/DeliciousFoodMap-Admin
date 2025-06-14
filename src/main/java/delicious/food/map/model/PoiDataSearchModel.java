@@ -28,6 +28,6 @@ public class PoiDataSearchModel extends PaginationModel{
     /**
      * 美食分类ID
      */
-    @Size(min = 19, max = 19, message = "美食分类ID必须为19位", groups = {SearchPoiData.class})
+    @Size(min = 19, message = "美食分类ID必须为19位", groups = {SearchPoiData.class})
     private String categoryId;
 }

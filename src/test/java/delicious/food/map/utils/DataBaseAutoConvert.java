@@ -39,11 +39,11 @@ class DataBaseAutoConvert {
         Map<String, String> categoryMap = categoryMapper.selectList(null).stream().collect(Collectors.toMap(CategoryEntity::getName, CategoryEntity::getId));
 
         for (PoiDataEntity poiDataEntity : poiDataEntityList) {
-            String category = poiDataEntity.getCategory();
+            String category = poiDataEntity.getCategoryId();
             if (categoryMap.containsKey(category)) {
-                poiDataEntity.setCategory(categoryMap.get(category));
+                poiDataEntity.setCategoryId(categoryMap.get(category));
             } else {
-                poiDataEntity.setCategory("");
+                poiDataEntity.setCategoryId("");
             }
             poiDataEntity.setId(null);
         }

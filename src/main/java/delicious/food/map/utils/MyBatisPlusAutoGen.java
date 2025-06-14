@@ -41,7 +41,7 @@ public class MyBatisPlusAutoGen {
                 })
                 //4、策略配置
                 .strategyConfig(builder -> {
-                    builder.addInclude("poi_data") // 设置需要生成的数据表名
+                    builder.addInclude("sys_role") // 设置需要生成的数据表名
                             .addTablePrefix("t_", "c_") // 设置过滤表前缀
 
                             //4.1、Mapper策略配置

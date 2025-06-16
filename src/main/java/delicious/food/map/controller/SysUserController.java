@@ -1,6 +1,7 @@
 package delicious.food.map.controller;
 
 
+import com.auth0.jwt.JWT;
 import delicious.food.map.common.JsonResult;
 import delicious.food.map.common.StatusCode;
 import delicious.food.map.config.aop.RateLimit;
@@ -12,6 +13,7 @@ import delicious.food.map.service.CaptchaService;
 import delicious.food.map.service.SysUserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,6 +71,21 @@ public class SysUserController {
         }
 
         boolean result = userService.register(user);
+        return JsonResult.success(result);
+    }
+
+    /**
+     * 用户登出接口
+     *
+     * @param request 请求头中携带JWT Token
+     * @return 登出结果
+     */
+    @PostMapping("/logout")
+    @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
+    public JsonResult<Boolean> logout(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        String userId = JWT.decode(token).getAudience().get(0);
+        boolean result = userService.logout(userId);
         return JsonResult.success(result);
     }
 

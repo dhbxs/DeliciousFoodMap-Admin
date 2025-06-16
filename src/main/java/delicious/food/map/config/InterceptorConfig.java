@@ -33,7 +33,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
         List<String> patterns = new ArrayList<>();
         patterns.add("/health/**");
         patterns.add("/captcha/**");
-        patterns.add("/sys-user/**");
+        patterns.add("/sys-user/login");
+        patterns.add("/sys-user/register");
         patterns.add("/poi-data/search");
         patterns.add("/category/get-all");
 

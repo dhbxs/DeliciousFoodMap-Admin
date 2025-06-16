@@ -117,6 +117,7 @@ CREATE TABLE `sys_user` (
   `password` varchar(32) DEFAULT NULL COMMENT '密码',
   `salt` varchar(32) DEFAULT NULL COMMENT '密码盐值',
   `sign` varchar(32) DEFAULT NULL COMMENT 'JWT Token 签名',
+  `is_delete` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '是否已删除\r\nY - 已删除\r\nN - 未删除',
   `created_time` datetime DEFAULT NULL COMMENT '创建时间',
   `modified_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
@@ -131,7 +132,7 @@ CREATE TABLE `sys_user` (
 
 LOCK TABLES `sys_user` WRITE;
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
-INSERT INTO `sys_user` VALUES ('1933906384221986818','admin','123@qq.com',1,'7D659BD1F372710B8FFCAE9C2D333500','LdQOwFNZubHL0D5dXyFpAzhd5RqRahY6','UjJyT7garfwdFuSWld0gikO6hv087EvV','2025-06-14 23:16:27','2025-06-14 23:16:27');
+INSERT INTO `sys_user` VALUES ('1933906384221986818','admin','123@qq.com',1,'7D659BD1F372710B8FFCAE9C2D333500','LdQOwFNZubHL0D5dXyFpAzhd5RqRahY6',NULL,'N','2025-06-14 23:16:27','2025-06-14 23:16:27');
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,4 +149,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-15  0:12:37
+-- Dump completed on 2025-06-16 23:37:53

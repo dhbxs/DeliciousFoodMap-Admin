@@ -1,6 +1,7 @@
 package delicious.food.map.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import delicious.food.map.common.RoleConstant;
 import delicious.food.map.common.StatusCode;
 import delicious.food.map.entity.SysUserEntity;
@@ -119,5 +120,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         return userResultModel;
     }
 
+    /**
+     * 登出
+     *
+     * @param userId 用户id
+     * @return 登出结果
+     */
+    @Override
+    public boolean logout(String userId) {
+
+        sysUserMapper.update(new LambdaUpdateWrapper<SysUserEntity>()
+                .set(SysUserEntity::getSign, null)
+                .eq(SysUserEntity::getId, userId));
+
+        return true;
+    }
 
 }

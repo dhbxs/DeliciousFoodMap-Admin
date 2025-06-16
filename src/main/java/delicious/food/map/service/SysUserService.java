@@ -35,4 +35,12 @@ public interface SysUserService extends IService<SysUserEntity> {
      * @return 登录结果
      */
     UserResultModel login(UserLoginModel user);
+
+    /**
+     * 登出
+     *
+     * @param userId 用户id
+     * @return 登出结果
+     */
+    boolean logout(String userId);
 }

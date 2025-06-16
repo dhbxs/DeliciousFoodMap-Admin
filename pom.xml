@@ -120,6 +120,14 @@
             <version>5.5.2</version>
         </dependency>
 
+        <!-- 谷歌的Guava 用来接口限流 -->
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.8-jre</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

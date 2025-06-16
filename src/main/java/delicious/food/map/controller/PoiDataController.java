@@ -4,6 +4,7 @@ package delicious.food.map.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import delicious.food.map.common.JsonResult;
 import delicious.food.map.common.validator.group.SearchPoiData;
+import delicious.food.map.config.aop.RateLimit;
 import delicious.food.map.entity.PoiDataEntity;
 import delicious.food.map.model.PoiDataResultModel;
 import delicious.food.map.model.PoiDataSearchModel;
@@ -32,6 +33,7 @@ public class PoiDataController {
      * @return 搜索结果
      */
     @PostMapping("/search")
+    @RateLimit(key = "publicInterface", permitsPerSecond = 100, timeout = 500)
     JsonResult<IPage<PoiDataResultModel>> search(@RequestBody @Validated(SearchPoiData.class) PoiDataSearchModel searchModel) {
         IPage<PoiDataResultModel> search = poiDataService.search(searchModel);
         return JsonResult.success(search);
@@ -46,6 +48,7 @@ public class PoiDataController {
      * @return 执行结果
      */
     @PostMapping("/insert-or-update-or-delete")
+    @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
     JsonResult<Boolean> insertOrUpdateOrDeletePoiData(@RequestBody PoiDataEntity poiDataEntity) {
         boolean result = poiDataService.insertOrUpdateOrDeletePoiData(poiDataEntity);
         return JsonResult.success(result);

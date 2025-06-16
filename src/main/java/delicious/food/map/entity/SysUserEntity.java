@@ -62,6 +62,12 @@ public class SysUserEntity implements Serializable {
     private String sign;
 
     /**
+     * 是否删除
+     */
+    @TableField("is_delete")
+    private String isDelete;
+
+    /**
      * 创建时间
      */
     @TableField(value = "created_time", fill = FieldFill.INSERT)

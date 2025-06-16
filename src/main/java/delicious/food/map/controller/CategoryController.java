@@ -2,6 +2,7 @@ package delicious.food.map.controller;
 
 
 import delicious.food.map.common.JsonResult;
+import delicious.food.map.config.aop.RateLimit;
 import delicious.food.map.entity.CategoryEntity;
 import delicious.food.map.model.CategoryResultModel;
 import delicious.food.map.service.CategoryService;
@@ -33,6 +34,7 @@ public class CategoryController {
      * @return 分类数据
      */
     @PostMapping("/get-all")
+    @RateLimit(key = "publicInterface", permitsPerSecond = 100, timeout = 500)
     public JsonResult<List<CategoryResultModel>> getAllCategoryData() {
         List<CategoryResultModel> result = categoryService.getAll();
         return JsonResult.success(result);
@@ -47,6 +49,7 @@ public class CategoryController {
      * @return 执行结果
      */
     @PostMapping("/insert-or-update-or-delete")
+    @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
     public JsonResult<Boolean> insertOrUpdateOrDeleteCategory(@RequestBody CategoryEntity category) {
         boolean result = categoryService.insertOrUpdateOrDeleteCategory(category);
         return JsonResult.success(result);

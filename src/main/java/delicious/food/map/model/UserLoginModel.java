@@ -27,4 +27,11 @@ public class UserLoginModel {
     @Size(min = 8, max = 40, message = "密码长度必须在 8 ~ 40 位之间")
     private String password;
 
+    /**
+     * 验证码
+     */
+    @NotBlank
+    @Size(min = 6, max = 6, message = "验证码长度必须为 4 位")
+    private String verifyCode;
+
 }

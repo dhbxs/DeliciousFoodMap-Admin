@@ -89,7 +89,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
      */
     @Override
     public UserResultModel login(UserLoginModel user) {
-        LambdaQueryWrapper<SysUserEntity> wrapper = new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getEmail, user.getEmail());
+        LambdaQueryWrapper<SysUserEntity> wrapper = new LambdaQueryWrapper<SysUserEntity>()
+                .eq(SysUserEntity::getEmail, user.getEmail())
+                .eq(SysUserEntity::getIsDelete, "N");
         SysUserEntity sysUserEntity = sysUserMapper.selectOne(wrapper);
 
         if (sysUserEntity == null) {

@@ -34,4 +34,11 @@ public class UserRegisterModel {
     @NotBlank
     @Email(message = "邮箱地址错误")
     private String email;
+
+    /**
+     * 验证码
+     */
+    @NotBlank
+    @Size(min = 6, max = 6, message = "验证码长度必须为 4 位")
+    private String verifyCode;
 }

@@ -14,6 +14,7 @@ import lombok.Getter;
 public enum StatusCode {
     SUCCESS("200", "OK", ""),
     PARAMS_ERROR("4000", "请求参数错误", ""),
+    CAPTCHA_ERROR("4001", "验证码错误", ""),
     NOT_LOGIN("5000", "未登录", ""),
     USERNAME_EMAIL_REPEAT("5001", "邮箱或用户名重复", ""),
     USER_NOT_EXIST_OR_PASSWORD_ERROR("5002", "用户不存在或密码错误", ""),

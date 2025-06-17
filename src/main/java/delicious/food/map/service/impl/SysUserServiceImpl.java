@@ -75,6 +75,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
 
         sysUserEntity.setSalt(salt);
         sysUserEntity.setPassword(md5Password);
+        sysUserEntity.setIsDelete("N");
         sysUserEntity.setCreatedTime(now);
         sysUserEntity.setModifiedTime(now);
         int insert = sysUserMapper.insert(sysUserEntity);

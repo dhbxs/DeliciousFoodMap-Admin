@@ -138,7 +138,7 @@ public class CaptchaUtil {
         // 默认字符数量
         private int size = 6;
         // 默认干扰线数量
-        private int lines = 10;
+        private int lines = 20;
         // 默认宽度
         private int width = 120;
         // 默认高度

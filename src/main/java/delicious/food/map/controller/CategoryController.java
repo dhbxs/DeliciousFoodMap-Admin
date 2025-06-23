@@ -2,6 +2,8 @@ package delicious.food.map.controller;
 
 
 import delicious.food.map.common.JsonResult;
+import delicious.food.map.common.RoleConstant;
+import delicious.food.map.config.aop.AuthCheck;
 import delicious.food.map.config.aop.RateLimit;
 import delicious.food.map.entity.CategoryEntity;
 import delicious.food.map.model.CategoryResultModel;
@@ -50,6 +52,7 @@ public class CategoryController {
      */
     @PostMapping("/insert-or-update-or-delete")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
+    @AuthCheck({RoleConstant.USER, RoleConstant.ADMIN})
     public JsonResult<Boolean> insertOrUpdateOrDeleteCategory(@RequestBody CategoryEntity category) {
         boolean result = categoryService.insertOrUpdateOrDeleteCategory(category);
         return JsonResult.success(result);

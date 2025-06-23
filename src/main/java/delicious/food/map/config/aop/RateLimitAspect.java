@@ -10,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -32,6 +33,7 @@ public class RateLimitAspect {
      */
     private final Map<String, RateLimiter> limitMap = Maps.newConcurrentMap();
 
+    @Order(1)
     @Around("@annotation(delicious.food.map.config.aop.RateLimit)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

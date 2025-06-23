@@ -18,6 +18,7 @@ public enum StatusCode {
     NOT_LOGIN("5000", "未登录", ""),
     USERNAME_EMAIL_REPEAT("5001", "邮箱或用户名重复", ""),
     USER_NOT_EXIST_OR_PASSWORD_ERROR("5002", "用户不存在或密码错误", ""),
+    NOT_AUTH("5003", "您没有权限", ""),
     SYSTEM_ERROR("6000", "系统内部错误", "");
 
     /**

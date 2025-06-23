@@ -33,14 +33,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     private SysUserMapper sysUserMapper;
 
     /**
-     * 通过ID 查找用户
+     * 通过ID 查找未删除的用户
      *
      * @param userId 用户ID
      * @return SysEntity
      */
     @Override
     public SysUserEntity getUserById(String userId) {
-        return sysUserMapper.selectById(userId);
+        LambdaQueryWrapper<SysUserEntity> wrapper = new LambdaQueryWrapper<SysUserEntity>()
+                .eq(SysUserEntity::getIsDelete, "N")
+                .eq(SysUserEntity::getId, userId);
+        return sysUserMapper.selectOne(wrapper);
     }
 
     /**

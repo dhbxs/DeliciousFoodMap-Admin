@@ -3,7 +3,9 @@ package delicious.food.map.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import delicious.food.map.common.JsonResult;
+import delicious.food.map.common.RoleConstant;
 import delicious.food.map.common.validator.group.SearchPoiData;
+import delicious.food.map.config.aop.AuthCheck;
 import delicious.food.map.config.aop.RateLimit;
 import delicious.food.map.entity.PoiDataEntity;
 import delicious.food.map.model.PoiDataResultModel;
@@ -49,6 +51,7 @@ public class PoiDataController {
      */
     @PostMapping("/insert-or-update-or-delete")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
+    @AuthCheck({RoleConstant.USER})
     JsonResult<Boolean> insertOrUpdateOrDeletePoiData(@RequestBody PoiDataEntity poiDataEntity) {
         boolean result = poiDataService.insertOrUpdateOrDeletePoiData(poiDataEntity);
         return JsonResult.success(result);

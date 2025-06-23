@@ -34,30 +34,27 @@ public class RateLimitAspect {
     private final Map<String, RateLimiter> limitMap = Maps.newConcurrentMap();
 
     @Order(1)
-    @Around("@annotation(delicious.food.map.config.aop.RateLimit)")
-    public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        //拿RateLimit的注解
-        RateLimit limit = method.getAnnotation(RateLimit.class);
-        if (limit != null) {
+    @Around("@annotation(rateLimit)")
+    public Object around(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable{
+
+        if (rateLimit != null) {
             //key作用：不同的接口，不同的流量控制
-            String key=limit.key();
+            String key=rateLimit.key();
             RateLimiter rateLimiter = null;
             //验证缓存是否有命中key
             if (!limitMap.containsKey(key)) {
                 // 创建令牌桶
-                rateLimiter = RateLimiter.create(limit.permitsPerSecond());
+                rateLimiter = RateLimiter.create(rateLimit.permitsPerSecond());
                 limitMap.put(key, rateLimiter);
-                log.info("新建了令牌桶={}，容量={}",key,limit.permitsPerSecond());
+                log.info("新建了令牌桶={}，容量={}",key,rateLimit.permitsPerSecond());
             }
             rateLimiter = limitMap.get(key);
             // 拿令牌
-            boolean acquire = rateLimiter.tryAcquire(limit.timeout(), limit.timeunit());
+            boolean acquire = rateLimiter.tryAcquire(rateLimit.timeout(), rateLimit.timeunit());
             // 拿不到命令，直接返回异常提示
             if (!acquire) {
                 log.debug("令牌桶={}，获取令牌失败",key);
-                throw new BusinessException(StatusCode.SYSTEM_ERROR, limit.msg());
+                throw new BusinessException(StatusCode.SYSTEM_ERROR, rateLimit.msg());
             }
         }
         return joinPoint.proceed();

@@ -51,7 +51,7 @@ public class PoiDataController {
      */
     @PostMapping("/insert-or-update-or-delete")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
-    @AuthCheck({RoleConstant.USER})
+    @AuthCheck(role = {RoleConstant.USER, RoleConstant.ADMIN})
     JsonResult<Boolean> insertOrUpdateOrDeletePoiData(@RequestBody PoiDataEntity poiDataEntity) {
         boolean result = poiDataService.insertOrUpdateOrDeletePoiData(poiDataEntity);
         return JsonResult.success(result);

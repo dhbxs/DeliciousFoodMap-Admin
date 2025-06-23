@@ -28,11 +28,12 @@ import java.util.List;
 public class AuthCheckAspect {
 
     @Order(2)
-    @Around("@annotation(delicious.food.map.config.aop.AuthCheck)")
+    @Around("@annotation(authCheck)")
     public Object authCheck(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization").substring(7);
+
         if (StringUtils.isBlank(token)) {
             throw new BusinessException(StatusCode.NOT_LOGIN);
         }

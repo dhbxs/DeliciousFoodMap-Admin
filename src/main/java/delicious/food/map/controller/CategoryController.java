@@ -52,7 +52,7 @@ public class CategoryController {
      */
     @PostMapping("/insert-or-update-or-delete")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
-    @AuthCheck({RoleConstant.USER, RoleConstant.ADMIN})
+    @AuthCheck(role = {RoleConstant.USER, RoleConstant.ADMIN})
     public JsonResult<Boolean> insertOrUpdateOrDeleteCategory(@RequestBody CategoryEntity category) {
         boolean result = categoryService.insertOrUpdateOrDeleteCategory(category);
         return JsonResult.success(result);

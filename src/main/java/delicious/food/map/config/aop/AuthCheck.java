@@ -15,13 +15,9 @@ import java.lang.annotation.*;
 @Documented
 public @interface AuthCheck {
 
-    @AliasFor("role")
-    RoleConstant[] value() default {RoleConstant.USER};
-
     /**
      * 角色权限
      * 默认为普通用户权限
      */
-    @AliasFor("value")
     RoleConstant[] role() default {RoleConstant.USER};
 }

@@ -25,9 +25,9 @@ import java.util.List;
  */
 @Aspect
 @Component
+@Order(2)
 public class AuthCheckAspect {
 
-    @Order(2)
     @Around("@annotation(authCheck)")
     public Object authCheck(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {
         RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();

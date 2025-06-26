@@ -27,8 +27,9 @@ public interface PoiDataService extends IService<PoiDataEntity> {
      * 有ID则更新 无则ID或ID不存在则新增
      * isDelete 值为Y则删除 值为空或值为N则不删除
      *
+     * @param userId        当前操作用户的 ID
      * @param poiDataEntity 美食数据
      * @return 执行结果i
      */
-    boolean insertOrUpdateOrDeletePoiData(PoiDataEntity poiDataEntity);
+    boolean insertOrUpdateOrDeletePoiData(String userId, PoiDataEntity poiDataEntity);
 }

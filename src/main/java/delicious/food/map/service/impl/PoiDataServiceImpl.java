@@ -52,22 +52,24 @@ public class PoiDataServiceImpl extends ServiceImpl<PoiDataMapper, PoiDataEntity
      * 有ID则更新 无则ID或ID不存在则新增
      * isDelete 值为Y则删除 值为空或值为N则不删除
      *
+     * @param userId        当前操作用户的 ID
      * @param poiDataEntity 美食数据
      * @return 执行结果i
      */
     @Override
-    public boolean insertOrUpdateOrDeletePoiData(PoiDataEntity poiDataEntity) {
+    public boolean insertOrUpdateOrDeletePoiData(String userId, PoiDataEntity poiDataEntity) {
         Date now = new Date();
         if (StringUtils.equals(poiDataEntity.getIsDelete(), "Y") && StringUtils.isBlank(poiDataEntity.getId())) {
-            throw new BusinessException(StatusCode.PARAMS_ERROR, "删除时必须指定分类ID");
+            throw new BusinessException(StatusCode.PARAMS_ERROR, "删除时必须指定美食数据ID");
         }
         // 如果没有指定删除状态，默认为 N - 未删除
         if (StringUtils.isBlank(poiDataEntity.getIsDelete())) {
             poiDataEntity.setIsDelete("N");
         }
 
-        // 设置时间状态字段值
+        // ID为空则新增 设置创建用户，时间等字段值
         if (StringUtils.isBlank(poiDataEntity.getId())) {
+            poiDataEntity.setCreator(userId);
             poiDataEntity.setCreatedTime(now);
             poiDataEntity.setModifiedTime(now);
         } else {
@@ -76,6 +78,5 @@ public class PoiDataServiceImpl extends ServiceImpl<PoiDataMapper, PoiDataEntity
 
         return poiDataMapper.insertOrUpdate(poiDataEntity);
     }
-
 
 }

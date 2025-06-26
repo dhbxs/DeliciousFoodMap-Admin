@@ -1,6 +1,7 @@
 package delicious.food.map.controller;
 
 
+import com.auth0.jwt.JWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import delicious.food.map.common.JsonResult;
 import delicious.food.map.common.RoleConstant;
@@ -12,6 +13,7 @@ import delicious.food.map.model.PoiDataResultModel;
 import delicious.food.map.model.PoiDataSearchModel;
 import delicious.food.map.service.PoiDataService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,8 +54,11 @@ public class PoiDataController {
     @PostMapping("/insert-or-update-or-delete")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
     @AuthCheck(role = {RoleConstant.USER, RoleConstant.ADMIN})
-    JsonResult<Boolean> insertOrUpdateOrDeletePoiData(@RequestBody PoiDataEntity poiDataEntity) {
-        boolean result = poiDataService.insertOrUpdateOrDeletePoiData(poiDataEntity);
+    JsonResult<Boolean> insertOrUpdateOrDeletePoiData(@RequestHeader("Authorization") String token, @RequestBody PoiDataEntity poiDataEntity) {
+        String jwtToken = token.substring(7);
+        String userId = JWT.decode(jwtToken).getAudience().get(0);
+
+        boolean result = poiDataService.insertOrUpdateOrDeletePoiData(userId, poiDataEntity);
         return JsonResult.success(result);
     }
 

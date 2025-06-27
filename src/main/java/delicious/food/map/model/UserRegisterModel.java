@@ -1,5 +1,6 @@
 package delicious.food.map.model;
 
+import delicious.food.map.common.validator.ValidEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,7 +33,7 @@ public class UserRegisterModel {
      * 邮箱
      */
     @NotBlank
-    @Email(message = "邮箱地址错误")
+    @ValidEmail(message = "邮箱格式错误")
     private String email;
 
     /**

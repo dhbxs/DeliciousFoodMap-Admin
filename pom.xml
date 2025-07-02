@@ -42,14 +42,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-<!--            &lt;!&ndash; spring-boot-starter-web 中已经引入了tomcat-embed-el &ndash;&gt;-->
-<!--            &lt;!&ndash; 所以这里先排除掉，方便打WAR包时用下面 profile 中的 build_war 配置 一次性排除tomcat &ndash;&gt;-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-<!--                    <artifactId>tomcat-embed-el</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
         </dependency>
 
         <!-- spring boot3 引入可选模块 -->
@@ -157,9 +149,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <encoding>UTF-8</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -168,8 +160,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>delicious.food.map.DeliciousFoodMapApplication</mainClass>
-                    <includeSystemScope>true</includeSystemScope>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -185,22 +176,6 @@
             delicious.food.map
         </finalName>
     </build>
-
-<!--    <profiles>-->
-<!--        <profile>-->
-<!--            <id>build_war</id>-->
-<!--            <activation>-->
-<!--                <activeByDefault>false</activeByDefault>-->
-<!--            </activation>-->
-<!--            <dependencies>-->
-<!--                <dependency>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                    <artifactId>spring-boot-starter-tomcat</artifactId>-->
-<!--                    <scope>provided</scope>-->
-<!--                </dependency>-->
-<!--            </dependencies>-->
-<!--        </profile>-->
-<!--    </profiles>-->
 
     <repositories>
         <repository>

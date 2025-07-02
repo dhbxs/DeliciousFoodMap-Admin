@@ -1,7 +1,6 @@
 package delicious.food.map.config.aop;
 
 import delicious.food.map.common.RoleConstant;
-import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 

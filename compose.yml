@@ -1,0 +1,39 @@
+name: DeliciousFoodMap
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=delicious_food_map
+    volumes:
+      # 卷映射，需要在顶级元素声明
+      - mysql-data:/var/lib/mysql
+      - ./sql/delicious-food-map.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    networks:
+      - delicious-food-map
+  delicious-food-map-admin:
+    container_name: delicious-food-map-admin
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - delicious-food-map-admin:/app/logs
+    restart: always
+    networks:
+      - delicious-food-map
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:
+  delicious-food-map-admin:
+
+networks:
+  delicious-food-map:

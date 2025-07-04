@@ -10,4 +10,4 @@ FROM eclipse-temurin:21
 WORKDIR /app
 COPY --from=build /app/target/delicious.food.map.jar /app/app.jar
 EXPOSE 8081
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=docker"]

@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Constant {
-    ERROR("出错了");
+    REDIS_CAPTCHA_ID_PREFIX("Captcha_"),
+    ;
 
     private final String text;
 }

@@ -1,8 +1,16 @@
 package delicious.food.map.utils;
 
+import delicious.food.map.common.StatusCode;
+import delicious.food.map.exception.BusinessException;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Random;
 
 /**
@@ -11,6 +19,7 @@ import java.util.Random;
  * @author dhbxs
  * @since 2025/06/16
  */
+@Slf4j
 public class CaptchaUtil {
     // 默认验证码字符集
     private static final char[] chars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -58,7 +67,7 @@ public class CaptchaUtil {
      * Object[0]：验证码字符串；
      * Object[1]：验证码图片。
      */
-    public Object[] createImage() {
+    public String[] createImage() {
         StringBuffer sb = new StringBuffer();
         // 创建空白图片
         BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -119,7 +128,26 @@ public class CaptchaUtil {
             graphic.drawLine(ran.nextInt(WIDTH), ran.nextInt(HEIGHT), ran.nextInt(WIDTH), ran.nextInt(HEIGHT));
         }
         // 返回验证码和图片
-        return new Object[]{sb.toString(), image};
+        return new String[]{sb.toString(), bufferedImageToBase64(image)};
+    }
+
+    /**
+     * 将图片编码为 base64
+     *
+     * @param bufferedImage 图片
+     * @return 图片的base64编码
+     */
+    private static String bufferedImageToBase64(BufferedImage bufferedImage) {
+        ByteArrayOutputStream ioStream = new ByteArrayOutputStream();//io流
+        try {
+            ImageIO.write(bufferedImage, "png", ioStream);//写入流中
+        } catch (IOException e) {
+            log.error("图片转Base64编码失败");
+            throw new BusinessException(StatusCode.SYSTEM_ERROR, "生成验证码失败");
+        }
+        String imageBase64 = Base64.getEncoder().encodeToString(ioStream.toByteArray());
+
+        return "data:image/png;base64," + imageBase64;
     }
 
     /**

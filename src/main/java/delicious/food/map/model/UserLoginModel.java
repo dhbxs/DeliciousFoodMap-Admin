@@ -1,10 +1,12 @@
 package delicious.food.map.model;
 
 import delicious.food.map.common.validator.ValidEmail;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * 用户登录Model
@@ -13,7 +15,16 @@ import lombok.Data;
  * @since 2025/6/14
  */
 @Data
-public class UserLoginModel {
+public class UserLoginModel implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 验证码ID
+     */
+    @Size(min = 19, max = 19, message = "验证码ID必须为19位")
+    private String captchaId;
 
     /**
      * 用户邮箱

@@ -3,6 +3,9 @@ package delicious.food.map.model;
 
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 分类数据查询结果
  *
@@ -10,7 +13,10 @@ import lombok.Data;
  * @since 2025-06-13
  */
 @Data
-public class CategoryResultModel {
+public class CategoryResultModel implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * id

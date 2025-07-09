@@ -2,6 +2,9 @@ package delicious.food.map.model;
 
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 用户 Model
  * 登录后返回必要用户数据
@@ -10,7 +13,10 @@ import lombok.Data;
  * @since 2025/6/14
  */
 @Data
-public class UserResultModel {
+public class UserResultModel implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 用户id

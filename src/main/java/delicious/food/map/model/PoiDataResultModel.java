@@ -4,6 +4,8 @@ package delicious.food.map.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +15,10 @@ import java.util.Date;
  * @since 2025/05/30 14:17
  */
 @Data
-public class PoiDataResultModel {
+public class PoiDataResultModel implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 店铺ID

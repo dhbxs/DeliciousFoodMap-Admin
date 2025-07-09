@@ -3,6 +3,9 @@ package delicious.food.map.common;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 响应结果Json封装
  *
@@ -11,7 +14,10 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class JsonResult<T> {
+public class JsonResult<T> implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 状态码

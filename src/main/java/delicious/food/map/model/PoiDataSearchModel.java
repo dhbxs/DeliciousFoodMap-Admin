@@ -4,6 +4,9 @@ import delicious.food.map.common.validator.group.SearchPoiData;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 美食数据搜索条件Model
  *
@@ -11,7 +14,10 @@ import lombok.Data;
  * @since 2025/05/30 13:36
  */
 @Data
-public class PoiDataSearchModel extends PaginationModel{
+public class PoiDataSearchModel extends PaginationModel implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 美食数据ID

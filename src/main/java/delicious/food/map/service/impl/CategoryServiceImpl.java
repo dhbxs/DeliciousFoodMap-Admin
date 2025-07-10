@@ -1,13 +1,12 @@
 package delicious.food.map.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import delicious.food.map.common.StatusCode;
 import delicious.food.map.entity.CategoryEntity;
 import delicious.food.map.exception.BusinessException;
 import delicious.food.map.mapper.CategoryMapper;
 import delicious.food.map.model.CategoryResultModel;
 import delicious.food.map.service.CategoryService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

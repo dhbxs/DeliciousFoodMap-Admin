@@ -1,8 +1,10 @@
 package delicious.food.map.service.impl;
 
+import delicious.food.map.common.Constant;
 import delicious.food.map.service.CaptchaService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,32 +16,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class CaptchaServiceImpl implements CaptchaService {
 
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
     /**
      * 校验验证码
      *
-     * @param request 请求
-     * @param code    验证码
+     * @param captchaId 验证码ID
+     * @param code      用户输入的验证码值
      * @return 校验结果
      */
     @Override
-    public boolean checkCaptchaCode(HttpServletRequest request, String code) {
-        final long CAPTCHA_EXPIRE_MS = 5 * 60 * 1000; // 验证码有效期5分钟，单位毫秒，可自行修改，建议不超过10分钟，超过10分钟请自行处理
+    public boolean checkCaptchaCode(String captchaId, String code) {
+        boolean checkResult = false;
 
-        String sessionCaptchaCode = (String) request.getSession().getAttribute("Captcha_Code");
-        Long captchaTime = (Long) request.getSession().getAttribute("Captcha_Time");
+        String captchaCode = redisTemplate.opsForValue().get(Constant.REDIS_CAPTCHA_ID_PREFIX.getText() + captchaId);
 
-        long currentTime = System.currentTimeMillis();
-
-        if ((captchaTime != null)
-                && (currentTime - captchaTime < CAPTCHA_EXPIRE_MS)
-                && (StringUtils.equalsIgnoreCase(code, sessionCaptchaCode))
-        ) {
-                request.getSession().removeAttribute("Captcha_Code");
-                return true;
+        if (StringUtils.isNotBlank(captchaCode) && StringUtils.equals(captchaCode, code)) {
+            checkResult = true;
         }
+        redisTemplate.delete(Constant.REDIS_CAPTCHA_ID_PREFIX.getText() + captchaId);
 
-        request.getSession().removeAttribute("Captcha_Code");
-        request.getSession().removeAttribute("Captcha_Time");
-        return false;
+        return checkResult;
     }
 }

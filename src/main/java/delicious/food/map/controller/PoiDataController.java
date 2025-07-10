@@ -13,7 +13,6 @@ import delicious.food.map.model.PoiDataResultModel;
 import delicious.food.map.model.PoiDataSearchModel;
 import delicious.food.map.service.PoiDataService;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

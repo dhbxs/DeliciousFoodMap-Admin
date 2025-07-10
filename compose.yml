@@ -2,10 +2,11 @@ name: DeliciousFoodMap
 
 services:
   mysql:
-    container_name: mysql
     image: mysql:8.0
-    ports:
-      - "3306:3306"
+    expose:
+      - 3306
+    networks:
+      - private-network
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=delicious_food_map
@@ -14,26 +15,40 @@ services:
       - mysql-data:/var/lib/mysql
       - ./sql/delicious-food-map.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=123456
+    expose:
+      - 6379
     networks:
-      - delicious-food-map
-  delicious-food-map-admin:
-    container_name: delicious-food-map-admin
+      - private-network
+    restart: always
+    volumes:
+      - redis-data:/redis/data
+      - redis-conf:/usr/local/etc/redis/redis.conf
+
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
-    volumes:
-      - delicious-food-map-admin:/app/logs
-    restart: always
     networks:
-      - delicious-food-map
+      - private-network
+    volumes:
+      - backend:/app/logs
+    restart: always
     depends_on:
       - mysql
+      - redis
 
 volumes:
   mysql-data:
-  delicious-food-map-admin:
+  redis-data:
+  redis-conf:
+  backend:
 
 networks:
-  delicious-food-map:
+  private-network:

@@ -123,6 +123,15 @@ public class JsonResult<T> implements Serializable {
     }
 
     /**
+     * 指定 状态码 + 自定义描述 + 自定义数据 响应
+     *
+     * @param statusCode 响应状态信息枚举值
+     */
+    public JsonResult(StatusCode statusCode, String description, T data) {
+        this(statusCode.getCode(), statusCode.getMessage(), description, data);
+    }
+
+    /**
      * 响应 成功
      *
      * @param <T> 泛型方法
@@ -172,6 +181,16 @@ public class JsonResult<T> implements Serializable {
      */
     public static <T> JsonResult<T> error(StatusCode statusCode, String description) {
         return new JsonResult<>(statusCode, description);
+    }
+
+    /**
+     * 响应 错误 + 自定义描述 + 错误数据
+     *
+     * @param <T> 泛型方法
+     * @return 响应结果
+     */
+    public static <T> JsonResult<T> error(StatusCode statusCode, String description, T data) {
+        return new JsonResult<>(statusCode, description,  data);
     }
 
     /**

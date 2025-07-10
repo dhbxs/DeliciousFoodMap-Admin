@@ -23,7 +23,7 @@ public class UserRegisterModel implements Serializable {
     /**
      * 验证码ID
      */
-    @Size(min = 19, max = 19, message = "验证码ID必须为19位")
+    @Size(min = 36, max = 36, message = "验证码ID必须为36位")
     private String captchaId;
 
     /**
@@ -51,6 +51,6 @@ public class UserRegisterModel implements Serializable {
      * 验证码
      */
     @NotBlank
-    @Size(min = 6, max = 6, message = "验证码长度必须为 4 位")
+    @Size(min = 6, max = 6, message = "验证码长度必须为 6 位")
     private String verifyCode;
 }

@@ -23,18 +23,20 @@ public class CaptchaServiceImpl implements CaptchaService {
      * 校验验证码
      *
      * @param captchaId 验证码ID
-     * @param code    用户输入的验证码值
+     * @param code      用户输入的验证码值
      * @return 校验结果
      */
     @Override
     public boolean checkCaptchaCode(String captchaId, String code) {
+        boolean checkResult = false;
 
         String captchaCode = redisTemplate.opsForValue().get(Constant.REDIS_CAPTCHA_ID_PREFIX.getText() + captchaId);
 
         if (StringUtils.isNotBlank(captchaCode) && StringUtils.equals(captchaCode, code)) {
-            redisTemplate.delete(Constant.REDIS_CAPTCHA_ID_PREFIX.getText() + captchaId);
-            return true;
+            checkResult = true;
         }
-        return false;
+        redisTemplate.delete(Constant.REDIS_CAPTCHA_ID_PREFIX.getText() + captchaId);
+
+        return checkResult;
     }
 }

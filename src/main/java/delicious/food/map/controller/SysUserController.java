@@ -13,6 +13,7 @@ import delicious.food.map.service.CaptchaService;
 import delicious.food.map.service.SysUserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,7 @@ public class SysUserController {
      */
     @PostMapping("/login")
     @RateLimit(key = "sysInterface", permitsPerSecond = 50, timeout = 500)
-    public JsonResult<UserResultModel> login(@RequestBody UserLoginModel user) {
+    public JsonResult<UserResultModel> login(@Valid @RequestBody UserLoginModel user) {
 
         boolean checked = captchaService.checkCaptchaCode(user.getCaptchaId(), user.getVerifyCode());
 
@@ -62,7 +63,7 @@ public class SysUserController {
      */
     @PostMapping("/register")
     @RateLimit(key = "registerInterface", permitsPerSecond = 5, timeout = 500)
-    public JsonResult<Boolean> register(@RequestBody UserRegisterModel user) {
+    public JsonResult<Boolean> register(@Valid @RequestBody UserRegisterModel user) {
         boolean checked = captchaService.checkCaptchaCode(user.getCaptchaId(), user.getVerifyCode());
 
         if (!checked) {

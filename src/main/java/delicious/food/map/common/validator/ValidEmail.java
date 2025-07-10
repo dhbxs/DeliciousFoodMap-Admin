@@ -2,7 +2,6 @@ package delicious.food.map.common.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

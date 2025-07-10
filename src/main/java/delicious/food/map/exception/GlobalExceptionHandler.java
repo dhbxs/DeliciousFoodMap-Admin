@@ -8,8 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,9 +30,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public JsonResult<Map<String, String>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage(), e);
-        List<String> errors = new ArrayList<>();
-        e.getBindingResult().getFieldErrors().forEach(error -> errors.add(error.getDefaultMessage()));
-        return JsonResult.error(StatusCode.PARAMS_ERROR, String.join("，", errors));
+        Map<String, String> errors = new HashMap<>();
+
+        e.getBindingResult().getFieldErrors().forEach(error ->
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        String errorMessage = String.join("，", errors.values());
+
+        return JsonResult.error(StatusCode.PARAMS_ERROR, errorMessage, errors);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

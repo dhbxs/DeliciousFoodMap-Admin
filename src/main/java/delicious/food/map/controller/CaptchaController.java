@@ -12,9 +12,10 @@ import delicious.food.map.utils.CaptchaUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,7 @@ public class CaptchaController {
      *
      * @return CaptchaResultModel 验证码以及验证码所对应的id
      */
-    @GetMapping("/getCaptcha.png")
+    @PostMapping("/getCaptcha")
     @RateLimit(key = "publicInterface", permitsPerSecond = 100, timeout = 500)
     public JsonResult<CaptchaResultModel> getCaptcha() {
 
@@ -55,7 +56,7 @@ public class CaptchaController {
 
             return JsonResult.success(new CaptchaResultModel(uuid, captchaImgBase64));
         } catch (Exception e) {
-            log.error("验证码生成失败");
+            log.error("验证码生成失败", e);
             throw new BusinessException(StatusCode.SYSTEM_ERROR, "验证码生成失败");
         }
     }

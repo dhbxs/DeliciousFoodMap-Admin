@@ -40,6 +40,6 @@ jobs:
           push: true
           platforms: ${{ steps.buildx.outputs.platforms }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ GITHUB_REPOSITORY_NAME_PART }}:${{ inputs.tag }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ GITHUB_REPOSITORY_NAME_PART }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/delicious-food-map-admin:${{ inputs.tag }}
+            ${{ secrets.DOCKER_USERNAME }}/delicious-food-map-admin:latest
 

@@ -28,5 +28,5 @@ bin/
 !/src/main/resources/static/web/.gitkeep
 /**/mini_qrcode/
 
-### 忽略文件 ###
-compose-*local.yml
+### 忽略本地docker-compose.yml ###
+*compose-*local.yml

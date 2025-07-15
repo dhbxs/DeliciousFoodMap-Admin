@@ -32,12 +32,7 @@ services:
 
   backend:
     container_name: deliciousfoodmap-backend
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
     image: dhbxs/delicious-food-map-admin:latest
-#    ports:
-#      - "8081:8081"
     expose:
       - 8081
     networks:
@@ -51,7 +46,7 @@ services:
 
   frontend:
     container_name: deliciousfoodmap-frontend
-    image: dhbxs/deliciousfoodmap-web:latest
+    image: dhbxs/delicious-food-map-web:latest
     ports:
       - "8080:80"
     environment:

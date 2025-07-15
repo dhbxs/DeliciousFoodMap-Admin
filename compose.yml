@@ -1,7 +1,8 @@
-name: DeliciousFoodMap
+name: deliciousfoodmap
 
 services:
   mysql:
+    container_name: deliciousfoodmap-mysql
     image: mysql:8.0
     expose:
       - 3306
@@ -9,7 +10,7 @@ services:
       - private-network
     environment:
       - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=delicious_food_map
+      - MYSQL_DATABASE=delicious-food-map
     volumes:
       # 卷映射，需要在顶级元素声明
       - mysql-data:/var/lib/mysql
@@ -17,6 +18,7 @@ services:
     restart: always
 
   redis:
+    container_name: deliciousfoodmap-redis
     image: redis:latest
     environment:
       - REDIS_PASSWORD=123456
@@ -26,15 +28,18 @@ services:
       - private-network
     restart: always
     volumes:
-      - redis-data:/redis/data
-      - redis-conf:/usr/local/etc/redis/redis.conf
+      - redis-data:/data
 
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+    container_name: deliciousfoodmap-backend
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    image: dhbxs/delicious-food-map-admin:latest
+#    ports:
+#      - "8081:8081"
+    expose:
+      - 8081
     networks:
       - private-network
     volumes:
@@ -43,6 +48,20 @@ services:
     depends_on:
       - mysql
       - redis
+
+  frontend:
+    container_name: deliciousfoodmap-frontend
+    image: dhbxs/deliciousfoodmap-web:latest
+    ports:
+      - "8080:80"
+    environment:
+      - APP_AMAP_KEY={your amap key}
+      - APP_BACKEND_URL={your backend url}
+    networks:
+      - private-network
+    restart: always
+    depends_on:
+      -  backend
 
 volumes:
   mysql-data:

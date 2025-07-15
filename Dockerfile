@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # 运行阶段
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/delicious.food.map.jar /app/app.jar
 EXPOSE 8081

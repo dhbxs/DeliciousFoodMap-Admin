@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://mysql:3306/delicious-food-map?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://deliciousfoodmap-mysql:3306/delicious-food-map?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: '123456'
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   data:
     redis:
-      host: redis
+      host: deliciousfoodmap-redis
       port: 6379
       password: 123456
       timeout: 3000ms
